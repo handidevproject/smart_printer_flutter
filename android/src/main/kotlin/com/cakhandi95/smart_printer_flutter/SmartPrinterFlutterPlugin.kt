@@ -1,4 +1,4 @@
-package com.example.smart_printer_flutter
+package com.cakhandi95.smart_printer_flutter
 
 import androidx.annotation.NonNull
 
