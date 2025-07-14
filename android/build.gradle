@@ -23,6 +23,7 @@ allprojects {
 
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
+apply plugin: 'kotlin-kapt'
 
 android {
     namespace = "com.cakhandi95.smart_printer_flutter"
@@ -50,6 +51,8 @@ android {
     dependencies {
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito:mockito-core:5.0.0")
+        implementation ("androidx.core:core-ktx:1.12.0")
+        implementation files('libs/printer-lib-3.2.0.jar')
     }
 
     testOptions {
