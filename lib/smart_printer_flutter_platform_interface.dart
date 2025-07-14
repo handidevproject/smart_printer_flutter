@@ -80,7 +80,7 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
   Future<void> posPrintQRCode(
     String code, {
     int unitSize = 5,
-    QRErrLevel errLevel = QRErrLevel.L,
+    ErrLevel errLevel = ErrLevel.L,
     PStringEncoding encoding = PStringEncoding.utf8,
   }) {
     throw UnimplementedError('printQrCode() has not been implemented.');
