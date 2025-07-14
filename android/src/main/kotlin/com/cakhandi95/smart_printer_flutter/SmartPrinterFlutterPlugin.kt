@@ -16,6 +16,8 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import java.io.File
+import com.cakhandi95.smart_printer_flutter.models.toDict
+
 
 /** SmartPrinterFlutterPlugin */
 class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
@@ -89,7 +91,12 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
       }
     }
     when (call.method) {
+
+      // General handlers
+      "startScan" -> bleManager.startScan()
+      "stopScan" -> bleManager.stopScan()
       "connect" -> handleConnect(call, result)
+      "isScanning" -> result.success(bleManager.isScanning)
       "disconnect" -> bleManager.disconnect()
 
       // POS printer handlers
@@ -276,8 +283,5 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
   private fun invalidPrinter(result: Result) {
     result.error("INVALID_PRINTER", "Invalid printer", null)
   }
-
-
-
 
 }

@@ -80,6 +80,7 @@ class BleManager(
 
     @SuppressLint("MissingPermission")
     fun startScan() {
+        Log.d(TAG, "Start scan")
         if (!bluetoothAdapter.isDiscovering) {
             bluetoothAdapter.startDiscovery()
             onScanningChanged(true)
