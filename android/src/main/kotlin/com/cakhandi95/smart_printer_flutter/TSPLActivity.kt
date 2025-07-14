@@ -2,8 +2,6 @@ package com.cakhandi95.smart_printer_flutter
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import net.posprinter.TSPLConst
-import net.posprinter.TSPLPrinter
 import android.util.Base64
 import android.util.Log
 import com.cakhandi95.smart_printer_flutter.models.QrcodeAttr
@@ -11,6 +9,8 @@ import com.cakhandi95.smart_printer_flutter.models.TPdfAttr
 import com.cakhandi95.smart_printer_flutter.models.TextAttr
 import com.cakhandi95.smart_printer_flutter.utils.LabelSize
 import com.cakhandi95.smart_printer_flutter.utils.renderAllPagesFromPdf
+import net.posprinter.TSPLConst
+import net.posprinter.TSPLPrinter
 import net.posprinter.model.AlgorithmType
 import java.io.File
 

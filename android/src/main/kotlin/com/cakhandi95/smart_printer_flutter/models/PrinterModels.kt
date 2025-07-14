@@ -1,12 +1,7 @@
 package com.cakhandi95.smart_printer_flutter.models
 
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.content.Context
-import android.graphics.Bitmap
-import androidx.core.graphics.createBitmap
-import android.graphics.pdf.PdfRenderer
-import android.os.ParcelFileDescriptor
 import com.cakhandi95.smart_printer_flutter.utils.LabelSize
 import com.cakhandi95.smart_printer_flutter.utils.renderAllPagesFromPdf
 import net.posprinter.POSPrinter

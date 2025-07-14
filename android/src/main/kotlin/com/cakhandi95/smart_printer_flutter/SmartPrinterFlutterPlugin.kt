@@ -10,13 +10,13 @@ import com.cakhandi95.smart_printer_flutter.models.BarcodeAttr
 import com.cakhandi95.smart_printer_flutter.models.QrcodeAttr
 import com.cakhandi95.smart_printer_flutter.models.TPdfAttr
 import com.cakhandi95.smart_printer_flutter.models.TextAttr
+import com.cakhandi95.smart_printer_flutter.models.toDict
 import com.cakhandi95.smart_printer_flutter.utils.LabelSize
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import java.io.File
-import com.cakhandi95.smart_printer_flutter.models.toDict
 
 
 /** SmartPrinterFlutterPlugin */
@@ -97,6 +97,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
       "stopScan" -> bleManager.stopScan()
       "connect" -> handleConnect(call, result)
       "isScanning" -> result.success(bleManager.isScanning)
+      "isConnected" -> result.success(bleManager.isConnected)
       "disconnect" -> bleManager.disconnect()
 
       // POS printer handlers
@@ -241,7 +242,8 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
   private fun handleTsplPrintPDF(call: MethodCall, result: Result) {
     val args = call.arguments as Map<String, Any>
     val filePath = args["filePath"] as? String
-    val label = args["label"] as? LabelSize ?: LabelSize.DEFAULT
+    val labelRaw = args["label"] as? String
+    val label = LabelSize.from(labelRaw)
 
     if (filePath == null || filePath.isEmpty()) {
       result.error("INVALID_ARGUMENTS", "Missing filePath", null)
@@ -264,11 +266,13 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
   private fun handleTsplPrintPDFBase64(call: MethodCall, result: Result) {
     val args = call.arguments as Map<String, Any>
 
-    val base64Encoded = args["data"] as? String ?: run {
+    val base64Encoded = args["base64"] as? String ?: run {
       result.error("INVALID_ARGUMENTS", "Missing base64", null)
       return
     }
-    val label = args["label"] as? LabelSize ?: LabelSize.DEFAULT
+
+    val labelRaw = args["label"] as? String
+    val label = LabelSize.from(labelRaw)
 
     bleManager.tsplPrinter?.let {
       TSPLActivity.instance.printPDFBase64(base64Encoded, label, it)
