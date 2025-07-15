@@ -126,6 +126,10 @@ enum LabelSize {
   mm78x120,
   mm80x80,
   mm100x100,
+  mm100x150,
+  mm102x127,
+  mm58Cont,
+  mm80Cont
 }
 
 extension LabelSizeExtension on LabelSize {
@@ -141,6 +145,14 @@ extension LabelSizeExtension on LabelSize {
         return "80x80";
       case LabelSize.mm100x100:
         return "100x100";
+      case LabelSize.mm100x150:
+        return "100x150";
+      case LabelSize.mm102x127:
+        return "102x127";
+      case LabelSize.mm58Cont:
+        return "58x200";
+      case LabelSize.mm80Cont:
+        return "80x200";
     }
   }
 
@@ -156,6 +168,14 @@ extension LabelSizeExtension on LabelSize {
         return LabelSize.mm80x80;
       case "100x100":
         return LabelSize.mm100x100;
+      case "100x150":
+        return LabelSize.mm100x150;
+      case "102x127":
+        return LabelSize.mm102x127;
+      case "58x200":
+        return LabelSize.mm58Cont;
+      case "80x200":
+        return LabelSize.mm80Cont;
       default:
         throw Exception("Unknown label size: $label");
     }
