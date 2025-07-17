@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:smart_printer_flutter/printer_models.dart';
 import 'smart_printer_flutter_platform_interface.dart';
 
@@ -218,4 +220,48 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
             .map((e) => Peripheral.fromJson(Map<String, dynamic>.from(e)))
             .toList();
       });
+
+  @override
+  Future<void> initializeBle() async {
+    await requestBluetoothPermissions();
+
+    try {
+      final success = await MethodChannel('smart_printer_flutter')
+          .invokeMethod('initBleManager');
+      print("BLE Manager initialized: $success");
+    } on PlatformException catch (e) {
+      print("Gagal inisialisasi BLE: ${e.message}");
+    }
+  }
+
+  Future<void> requestBluetoothPermissions() async {
+    if (!Platform.isAndroid) return;
+
+    // Android 12 (API 31) ke atas wajib pakai permission khusus
+    if (Platform.isAndroid) {
+      final bluetoothConnectStatus = await Permission.bluetoothConnect.status;
+      if (!bluetoothConnectStatus.isGranted) {
+        await Permission.bluetoothConnect.request();
+      }
+
+      final bluetoothScanStatus = await Permission.bluetoothScan.status;
+      if (!bluetoothScanStatus.isGranted) {
+        await Permission.bluetoothScan.request();
+      }
+    } else {
+      // Android < 12 tetap perlu Location untuk BLE scanning
+      final locationStatus = await Permission.location.status;
+      if (!locationStatus.isGranted) {
+        await Permission.location.request();
+      }
+    }
+
+    // Optional: cek apakah ditolak permanen
+    if (await Permission.bluetoothConnect.isPermanentlyDenied ||
+        await Permission.bluetoothScan.isPermanentlyDenied ||
+        await Permission.location.isPermanentlyDenied) {
+      // Arahkan user ke Settings
+      await openAppSettings();
+    }
+  }
 }

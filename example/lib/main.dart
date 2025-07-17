@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:smart_printer_flutter/smart_printer_flutter.dart';
 import 'select_device.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,16 +30,48 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        _getCurrentState();
-      },
-    );
+    requestBluetoothPermissions().then((_) {
+      print("Bluetooth permissions granted");
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) {
+          _getCurrentState();
+        },
+      );
 
-    _plugin.statusStream.listen((event) {
-      print(">>> status: ${event.status.name}");
-      _getCurrentState();
+      _plugin.statusStream.listen((event) {
+        print(">>> status: ${event.status.name}");
+        _getCurrentState();
+      });
+    }).catchError((error) {
+      print("Error requesting Bluetooth permissions: $error");
     });
+  }
+
+  Future<void> requestBluetoothPermissions() async {
+    if (!Platform.isAndroid) return;
+
+    final deviceInfo = DeviceInfoPlugin();
+    final androidInfo = await deviceInfo.androidInfo;
+    final sdkInt = androidInfo.version.sdkInt;
+
+    if (sdkInt >= 31) {
+      final statusScan = await Permission.bluetoothScan.status;
+      final statusConnect = await Permission.bluetoothConnect.status;
+
+      if (!statusScan.isGranted) {
+        await Permission.bluetoothScan.request();
+      }
+
+      if (!statusConnect.isGranted) {
+        await Permission.bluetoothConnect.request();
+      }
+    } else {
+      // Untuk Android < 12, Bluetooth permission biasa bisa diminta jika perlu
+      final bluetooth = await Permission.bluetooth.status;
+      if (!bluetooth.isGranted) {
+        await Permission.bluetooth.request();
+      }
+    }
   }
 
   void _getCurrentState() {

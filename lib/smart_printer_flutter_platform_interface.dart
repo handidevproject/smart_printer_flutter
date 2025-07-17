@@ -27,6 +27,8 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
   // General Methods
   // ===========================================================================
 
+  Future<void> initializeBle();
+
   /// Starts scanning for available Bluetooth printers.
   Future<void> startScan();
 

@@ -49,13 +49,12 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
 
     statusChannel = EventChannel(flutterPluginBinding.binaryMessenger, "smart_printer_flutter/status")
     scanningChannel = EventChannel(flutterPluginBinding.binaryMessenger, "smart_printer_flutter/scanning")
-    peripheralChannel = EventChannel(flutterPluginBinding.binaryMessenger, "smart_printer_flutter/peripheral")
+    peripheralChannel = EventChannel(flutterPluginBinding.binaryMessenger, "smart_printer_flutter/peripherals")
 
     statusChannel.setStreamHandler(createStreamHandler { sink -> statusEventSink = sink })
     scanningChannel.setStreamHandler(createStreamHandler { sink -> scanningEventSink = sink })
     peripheralChannel.setStreamHandler(createStreamHandler { sink -> peripheralEventSink = sink })
 
-    initBleManager()
   }
 
   private fun initBleManager() {
@@ -66,7 +65,8 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
       applicationContext.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
       != PackageManager.PERMISSION_GRANTED) return
-
+    println("Masuk ke sini")
+  
     bleManager = BleManager(
       context = applicationContext,
       onStatusChanged = { status -> statusEventSink?.success(status) },
@@ -117,6 +117,14 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
       "tspl_printImage" -> handleTsplPrintImage(call, result)
       "tspl_printPDF" -> handleTsplPrintPDF(call, result)
       "tspl_printPDFBase64" -> handleTsplPrintPDFBase64(call, result)
+      "initBleManager" -> {
+        initBleManager()
+        if (::bleManager.isInitialized) {
+          result.success(true)
+        } else {
+          result.error("PERMISSION_DENIED", "BLUETOOTH_CONNECT is denied", null)
+        }
+      }
 
       else -> result.notImplemented()
     }
