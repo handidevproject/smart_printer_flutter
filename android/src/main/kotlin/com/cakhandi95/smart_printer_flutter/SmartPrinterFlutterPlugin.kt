@@ -238,59 +238,100 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
     result.success(null)
   }
 
-  private fun handleTsplPrintImage(call: MethodCall, result: Result) {
-    val args = call.arguments as? Map<String, Any> ?: return invalidArgs(result)
+private fun handleTsplPrintImage(call: MethodCall, result: Result) {
+    try {
+        val args = call.arguments as? Map<*, *> ?: return invalidArgs(result)
 
-    val base64 = args["data"] as? String ?: return invalidArgs(result)
-    val width = (args["width"] as? Double ?: 600.0).toInt()
+        val base64 = args["data"] as? String
+        if (base64.isNullOrBlank()) {
+            return result.error("INVALID_ARGUMENTS", "'data' (base64) is missing or empty", null)
+        }
 
-    val printer = bleManager.tsplPrinter ?: return invalidPrinter(result)
+        val widthValue = args["width"]
+        val width = when (widthValue) {
+            is Int -> widthValue
+            is Double -> widthValue.toInt()
+            is Float -> widthValue.toInt()
+            is Number -> widthValue.toInt()
+            else -> 600 // default
+        }
 
-    TSPLActivity.instance.printImage(base64, width, printer)
+        val printer = bleManager.tsplPrinter
+        if (printer == null) return invalidPrinter(result)
 
-    result.success(null)
-  }
+        TSPLActivity.instance.printImage(base64, width, printer)
 
-  private fun handleTsplPrintPDF(call: MethodCall, result: Result) {
-    val args = call.arguments as Map<String, Any>
-    val filePath = args["filePath"] as? String
-    val labelRaw = args["label"] as? String
-    val label = LabelSize.from(labelRaw)
-
-    if (filePath == null || filePath.isEmpty()) {
-      result.error("INVALID_ARGUMENTS", "Missing filePath", null)
-      return
+        result.success(null)
+    } catch (e: Exception) {
+        Log.e("SmartPrinterPlugin", "Error in handleTsplPrintImage", e)
+        result.error("UNEXPECTED_ERROR", e.message, e)
     }
+}
 
-    val file = File(filePath)
-    if (!file.exists()) {
-      result.error("FILE_NOT_FOUND", "PDF not found", filePath)
-      return
+private fun handleTsplPrintPDF(call: MethodCall, result: Result) {
+    try {
+        val args = call.arguments as? Map<*, *> ?: return invalidArgs(result)
+
+        val filePath = args["filePath"] as? String
+        if (filePath.isNullOrBlank()) {
+            result.error("INVALID_ARGUMENTS", "Missing or empty 'filePath'", null)
+            return
+        }
+
+        val labelRaw = args["label"] as? String
+        val label = LabelSize.from(labelRaw)
+
+        val file = File(filePath)
+        if (!file.exists()) {
+            result.error("FILE_NOT_FOUND", "PDF not found at path", filePath)
+            return
+        }
+
+        val attr = TPdfAttr(filePath = filePath, labelSize = label)
+
+        val printer = bleManager.tsplPrinter
+        if (printer == null) {
+            invalidPrinter(result)
+            return
+        }
+
+        TSPLActivity.instance.printPDFFromPath(applicationContext, attr, printer)
+        result.success(true)
+
+    } catch (e: Exception) {
+        Log.e("SmartPrinterPlugin", "Exception in handleTsplPrintPDF", e)
+        result.error("UNEXPECTED_ERROR", e.message, e)
     }
+}
 
-    val attr = TPdfAttr(filePath = filePath, labelSize = label)
-    bleManager.tsplPrinter?.let {
-      TSPLActivity.instance.printPDFFromPath(applicationContext, attr, it)
-      result.success(true)
-    } ?: invalidPrinter(result)
-  }
+private fun handleTsplPrintPDFBase64(call: MethodCall, result: Result) {
+    try {
+        val args = call.arguments as? Map<*, *> ?: run {
+            result.error("INVALID_ARGUMENTS", "Arguments must be a map", null)
+            return
+        }
 
-  private fun handleTsplPrintPDFBase64(call: MethodCall, result: Result) {
-    val args = call.arguments as Map<String, Any>
+        val base64Encoded = args["base64"] as? String
+        if (base64Encoded.isNullOrBlank()) {
+            result.error("INVALID_ARGUMENTS", "Missing or empty 'base64'", null)
+            return
+        }
 
-    val base64Encoded = args["base64"] as? String ?: run {
-      result.error("INVALID_ARGUMENTS", "Missing base64", null)
-      return
+        val labelRaw = args["label"] as? String
+        val label = LabelSize.from(labelRaw)
+
+        val printer = bleManager.tsplPrinter
+        if (printer == null) {
+            invalidPrinter(result)
+            return
+        }
+
+        TSPLActivity.instance.printPDFBase64(base64Encoded, label, printer)
+        result.success(true)
+    } catch (e: Exception) {
+        result.error("UNEXPECTED_ERROR", e.message, e)
     }
-
-    val labelRaw = args["label"] as? String
-    val label = LabelSize.from(labelRaw)
-
-    bleManager.tsplPrinter?.let {
-      TSPLActivity.instance.printPDFBase64(base64Encoded, label, it)
-      result.success(true)
-    } ?: invalidPrinter(result)
-  }
+}
 
   private fun invalidArgs(result: Result) {
     result.error("INVALID_ARGUMENTS", "Invalid arguments", null)
