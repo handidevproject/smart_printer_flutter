@@ -16,7 +16,11 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+import io.flutter.plugin.common.EventChannel
+import io.flutter.plugin.common.MethodChannel.Result
 import java.io.File
+import com.cakhandi95.smart_printer_flutter.TSPLActivity
+import com.cakhandi95.smart_printer_flutter.PosActivity
 
 
 /** SmartPrinterFlutterPlugin */
@@ -42,12 +46,12 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
     applicationContext = flutterPluginBinding.applicationContext
 
     Log.d(TAG, "onAttachedToEngine")
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "x_printer")
+    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "smart_printer_flutter")
     channel.setMethodCallHandler(this)
 
-    statusChannel = EventChannel(flutterPluginBinding.binaryMessenger, "x_printer/status")
-    scanningChannel = EventChannel(flutterPluginBinding.binaryMessenger, "x_printer/scanning")
-    peripheralChannel = EventChannel(flutterPluginBinding.binaryMessenger, "x_printer/peripheral")
+    statusChannel = EventChannel(flutterPluginBinding.binaryMessenger, "smart_printer_flutter/status")
+    scanningChannel = EventChannel(flutterPluginBinding.binaryMessenger, "smart_printer_flutter/scanning")
+    peripheralChannel = EventChannel(flutterPluginBinding.binaryMessenger, "smart_printer_flutter/peripheral")
 
     statusChannel.setStreamHandler(createStreamHandler { sink -> statusEventSink = sink })
     scanningChannel.setStreamHandler(createStreamHandler { sink -> scanningEventSink = sink })
