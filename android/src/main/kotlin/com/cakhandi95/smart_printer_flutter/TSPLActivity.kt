@@ -88,13 +88,15 @@ class TSPLActivity {
         val pdfFile = File.createTempFile("temp_pdf", ".pdf")
         pdfFile.writeBytes(bytes)
 
-        val bitmaps = renderAllPagesFromPdf(pdfFile, labelSize.widthMm)
+        val (widthMm, heightMm) = labelSize.value.split("x").mapNotNull { it.toIntOrNull() }
+
+        val bitmaps = renderAllPagesFromPdf(pdfFile, widthMm.toDouble())
 
         for ((index, bitmap) in bitmaps.withIndex()) {
-            println("Page $index → bitmap: ${bitmap.width}x${bitmap.height} → height: ${labelSize.heightMm} mm")
+            println("Page $index → bitmap: ${bitmap.width}x${bitmap.height} → height: ${heightMm} mm")
 
             printer
-                .sizeMm(labelSize.widthMm, labelSize.heightMm)
+                .sizeMm(widthMm.toDouble(), heightMm.toDouble())
                 .gapInch(0.0, 0.0)
                 .offsetInch(0.0)
                 .speed(5.0)
@@ -126,13 +128,15 @@ class TSPLActivity {
             return
         }
 
-        val bitmaps = renderAllPagesFromPdf(file, attr.labelSize.widthMm)
+        val (widthMm, heightMm) = attr.labelSize.value.split("x").mapNotNull { it.toIntOrNull() }
+
+        val bitmaps = renderAllPagesFromPdf(file, widthMm.toDouble())
 
         for ((index, bitmap) in bitmaps.withIndex()) {
-            println("Page $index → bitmap: ${bitmap.width}x${bitmap.height} → height: ${attr.labelSize.heightMm} mm")
+            println("Page $index → bitmap: ${bitmap.width}x${bitmap.height} → height: ${heightMm.toDouble()} mm")
 
             printer
-                .sizeMm(attr.labelSize.widthMm, attr.labelSize.heightMm)
+                .sizeMm(widthMm.toDouble(), heightMm.toDouble())
                 .gapInch(0.0, 0.0)
                 .offsetInch(0.0)
                 .speed(5.0)

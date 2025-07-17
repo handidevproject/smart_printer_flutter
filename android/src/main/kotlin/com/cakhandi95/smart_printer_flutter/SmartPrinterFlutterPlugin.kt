@@ -20,8 +20,6 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel.Result
 import java.io.File
 import com.cakhandi95.smart_printer_flutter.TSPLActivity
-import com.cakhandi95.smart_printer_flutter.PosActivity
-
 
 /** SmartPrinterFlutterPlugin */
 class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
@@ -62,6 +60,8 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
 
   private fun initBleManager() {
     if (::bleManager.isInitialized) return
+
+    println("Initializing BleManager...")
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
       applicationContext.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)

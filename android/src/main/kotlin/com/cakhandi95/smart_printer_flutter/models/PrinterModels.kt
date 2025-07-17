@@ -160,11 +160,13 @@ data class TPdfAttr(
         val file = File(filePath)
         if (!file.exists()) return
 
-        val bitmaps = renderAllPagesFromPdf(file, labelSize.widthMm)
+        val (widthMm, heightMm) = labelSize.value.split("x").mapNotNull { it.toIntOrNull() }
+
+        val bitmaps = renderAllPagesFromPdf(file, widthMm.toDouble())
 
         for (bitmap in bitmaps) {
             printer
-                .sizeMm(labelSize.widthMm, labelSize.heightMm)
+                .sizeMm(widthMm.toDouble(), heightMm.toDouble())
                 .gapInch(0.0, 0.0)
                 .offsetInch(0.0)
                 .speed(5.0)

@@ -1,5 +1,6 @@
 import 'printer_models.dart';
 import 'smart_printer_flutter_platform_interface.dart';
+export 'printer_models.dart';
 
 class SmartPrinterFlutter {
   static final SmartPrinterFlutter _instance = SmartPrinterFlutter._internal();
