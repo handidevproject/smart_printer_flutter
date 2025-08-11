@@ -164,6 +164,8 @@ data class TPdfAttr(
 
         val bitmaps = renderAllPagesFromPdf(file, widthMm.toDouble())
 
+        //val bitmaps = renderAllPagesFromPdf(file, widthMm, heightMm)
+
         for (bitmap in bitmaps) {
             printer
                 .sizeMm(widthMm.toDouble(), heightMm.toDouble())

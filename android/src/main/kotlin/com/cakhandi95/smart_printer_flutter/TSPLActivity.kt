@@ -91,6 +91,7 @@ class TSPLActivity {
         val (widthMm, heightMm) = labelSize.value.split("x").mapNotNull { it.toIntOrNull() }
 
         val bitmaps = renderAllPagesFromPdf(pdfFile, widthMm.toDouble())
+        //val bitmaps = renderAllPagesFromPdf(file, widthMm, heightMm)
 
         for ((index, bitmap) in bitmaps.withIndex()) {
             println("Page $index → bitmap: ${bitmap.width}x${bitmap.height} → height: ${heightMm} mm")
@@ -121,43 +122,50 @@ class TSPLActivity {
         pdfFile.delete()
     }
 
+    var isPrinting = false
+
+    @Synchronized
     fun printPDFFromPath(context: Context, attr: TPdfAttr, printer: TSPLPrinter) {
-        val file = File(attr.filePath)
-        if (!file.exists()) {
-            Log.e("TSPLActivity", "PDF not found: ${attr.filePath}")
+        if (isPrinting) {
+            Log.w("TSPLPrint", "Already printing, skipping duplicate call")
             return
         }
+        isPrinting = true
 
-        val (widthMm, heightMm) = attr.labelSize.value.split("x").mapNotNull { it.toIntOrNull() }
+        try {
+            val file = File(attr.filePath)
+            if (!file.exists()) {
+                Log.e("TSPLActivity", "PDF not found: ${attr.filePath}")
+                return
+            }
 
-        val bitmaps = renderAllPagesFromPdf(file, widthMm.toDouble())
+            val (widthMm, heightMm) = attr.labelSize.value.split("x").mapNotNull { it.toIntOrNull() }
+            val bitmaps = renderAllPagesFromPdf(file, widthMm.toDouble())
 
-        for ((index, bitmap) in bitmaps.withIndex()) {
-            println("Page $index → bitmap: ${bitmap.width}x${bitmap.height} → height: ${heightMm.toDouble()} mm")
+            for ((index, bitmap) in bitmaps.withIndex()) {
+                println("Page $index → bitmap: ${bitmap.width}x${bitmap.height} → height: ${heightMm.toDouble()} mm")
 
-            printer
-                .sizeMm(widthMm.toDouble(), heightMm.toDouble())
-                .gapInch(0.0, 0.0)
-                .offsetInch(0.0)
-                .speed(5.0)
-                .density(10)
-                .direction(TSPLConst.DIRECTION_FORWARD)
-                .reference(20, 0)
-                .cls()
-                .bitmap(
-                    0,
-                    0,
-                    TSPLConst.BMP_MODE_OVERWRITE,
-                    bitmap.width,
-                    bitmap,
-                    AlgorithmType.Threshold
-                )
-                .print(1)
-
-            // Optional: Delay per page
-            // Thread.sleep(1000)
+                printer
+                    .sizeMm(widthMm.toDouble(), heightMm.toDouble())
+                    .gapInch(0.0, 0.0)
+                    .offsetInch(0.0)
+                    .speed(5.0)
+                    .density(10)
+                    .direction(TSPLConst.DIRECTION_FORWARD)
+                    .reference(20, 0)
+                    .cls()
+                    .bitmap(
+                        0,
+                        0,
+                        TSPLConst.BMP_MODE_OVERWRITE,
+                        bitmap.width,
+                        bitmap,
+                        AlgorithmType.Threshold
+                    )
+                    .print(1)
+            }
+        } finally {
+            isPrinting = false
         }
     }
-
-
 }

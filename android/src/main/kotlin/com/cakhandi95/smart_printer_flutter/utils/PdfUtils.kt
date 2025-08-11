@@ -19,7 +19,7 @@ fun renderAllPagesFromPdf(
     val fileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
     val pdfRenderer = PdfRenderer(fileDescriptor)
 
-    val dpi = 203
+    val dpi = 197
     val dotsPerMm = dpi / 25.4
     val targetWidthDots = (labelWidthMm * dotsPerMm).toInt()
 
