@@ -1,4 +1,4 @@
-group = "com.example.smart_printer_flutter"
+group = "com.cakhandi95.smart_printer_flutter"
 version = "1.0-SNAPSHOT"
 
 buildscript {
@@ -23,19 +23,20 @@ allprojects {
 
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
+apply plugin: 'kotlin-kapt'
 
 android {
-    namespace = "com.example.smart_printer_flutter"
+    namespace = "com.cakhandi95.smart_printer_flutter"
 
     compileSdk = 35
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11
+        jvmTarget = JavaVersion.VERSION_17
     }
 
     sourceSets {
@@ -50,6 +51,8 @@ android {
     dependencies {
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito:mockito-core:5.0.0")
+        implementation ("androidx.core:core-ktx:1.12.0")
+        implementation files('libs/printer-lib-3.2.0.jar')
     }
 
     testOptions {
