@@ -60,10 +60,10 @@ In the **ios/Runner/Info.plist** let’s add:
 
 ## Usage
 
-Init a XPrinter instance
+Init a SmartPrinterFlutter instance
 
 ```dart
-final plugin = XPrinter();
+final plugin = SmartPrinterFlutter();
 ```
 
 scan
