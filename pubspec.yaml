@@ -1,7 +1,7 @@
 name: smart_printer_flutter
 description: "A Flutter plugin to print text, pdf, barcodes, and QR codes to thermal label and POS printers using TSPL, ZPL, ESC/POS."
-version: 0.0.3
-homepage:
+version: 0.0.4
+homepage: "https://github.com/cakhandi95/smart_printer_flutter"
 
 environment:
   sdk: ^3.6.2
