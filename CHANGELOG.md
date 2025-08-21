@@ -1,3 +1,12 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## 0.0.6
+- Added proper MIT `LICENSE` file (replacing placeholder template).
+- Added `NOTICE` file to clarify usage of trademarks (XPrinter, TSPL, ZPL, ESC/POS).
+- Compliance improvements for pub.dev publishing requirements.
+
 ## 0.0.5
 - Update plugin version in pubspec.yaml
 - Replace print with debugPrint in example and method channel

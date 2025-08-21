@@ -1,0 +1,8 @@
+smart_printer_flutter – Thermal/Label Printer Plugin for Flutter
+
+This project supports printers and command sets including TSPL, ZPL, and ESC/POS.
+"XPrinter", "Blueprint Indonesia" , "TSPL", "ZPL", and "ESC/POS" are trademarks of their respective owners.
+The authors of this project are not affiliated with, endorsed by, or sponsored by
+any printer vendor unless explicitly stated in the documentation.
+
+If you redistribute this software in source or binary form, please retain this NOTICE.
