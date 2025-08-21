@@ -21,7 +21,7 @@ Currently supports **ESC/POS commands**, and **TSPL (on development)** for label
 | Monitor Printer Status | :white_check_mark: | :white_check_mark: | Streams updates on printer status and peripherals.         |
 | Is Scanning Stream     | :white_check_mark: | :white_check_mark: | Streams the scanning status of the printer.                |
 | Is Connected           | :white_check_mark: | :white_check_mark: | Checks if the printer is currently connected.              |
-| TSPL (Label Printer)   |   🚧 in progress   |   🚧 in progress   | Add support for TSPL command set (labels, stickers, etc).  |
+| TSPL (Label Printer)   | :white_check_mark: |   🚧 in progress   | Add support for TSPL command set (labels, stickers, etc).  |
 
 ## Getting Started
 
