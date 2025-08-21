@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     requestBluetoothPermissions().then((_) {
-      print("Bluetooth permissions granted");
+      debugPrint("Bluetooth permissions granted");
       WidgetsBinding.instance.addPostFrameCallback(
         (_) {
           _getCurrentState();
@@ -39,11 +39,10 @@ class _MyAppState extends State<MyApp> {
       );
 
       _plugin.statusStream.listen((event) {
-        print(">>> status: ${event.status.name}");
         _getCurrentState();
       });
     }).catchError((error) {
-      print("Error requesting Bluetooth permissions: $error");
+      debugPrint("Error requesting Bluetooth permissions: $error");
     });
   }
 
@@ -76,7 +75,6 @@ class _MyAppState extends State<MyApp> {
 
   void _getCurrentState() {
     _plugin.isConnected.then((value) {
-      print(">>> isConnected: $value");
       setState(() {
         _isConnected = value;
       });
@@ -275,7 +273,7 @@ class _MyAppState extends State<MyApp> {
       _plugin.posPrintImage(base64Image, 460.0);
       _plugin.cutPaper();
     } else {
-      print('Failed to decode image');
+      debugPrint('Failed to decode image');
     }
   }
 }

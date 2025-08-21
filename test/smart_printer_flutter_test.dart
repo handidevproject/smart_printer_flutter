@@ -2,14 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:smart_printer_flutter/printer_models.dart';
 import 'package:smart_printer_flutter/smart_printer_flutter.dart';
 import 'package:smart_printer_flutter/smart_printer_flutter_platform_interface.dart';
-import 'package:smart_printer_flutter/smart_printer_flutter_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 class MockSmartPrinterFlutterPlatform
     with MockPlatformInterfaceMixin
     implements SmartPrinterFlutterPlatform {
-  @override
-  Future<String?> getPlatformVersion() => Future.value('42');
 
   @override
   Future<void> connect(String deviceId) {
@@ -114,6 +111,11 @@ class MockSmartPrinterFlutterPlatform
   @override
   Future<void> tsplPrintText(String text, {PTextAlign align = PTextAlign.left, PTextAttribute attribute = PTextAttribute.normal, PTextW width = PTextW.w1, PTextH height = PTextH.h1}) {
     // TODO: implement tsplPrintText
+    throw UnimplementedError();
+  }
+  @override
+  Future<void> initializeBle() {
+    // TODO: implement initializeBle
     throw UnimplementedError();
   }
 }

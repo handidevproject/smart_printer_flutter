@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:smart_printer_flutter/printer_models.dart';
 import 'smart_printer_flutter_platform_interface.dart';
+import 'package:flutter/material.dart';
 
 /// Implementation of [SmartPrinterFlutterPlatform] using [MethodChannel].
 ///
@@ -228,9 +229,9 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
     try {
       final success = await MethodChannel('smart_printer_flutter')
           .invokeMethod('initBleManager');
-      print("BLE Manager initialized: $success");
+      debugPrint("BLE Manager initialized: $success");
     } on PlatformException catch (e) {
-      print("Gagal inisialisasi BLE: ${e.message}");
+      debugPrint("Gagal inisialisasi BLE: ${e.message}");
     }
   }
 
