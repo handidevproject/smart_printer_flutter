@@ -11,7 +11,7 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
   static final Object _token = Object();
 
   static SmartPrinterFlutterPlatform _instance =
-      MethodChannelSmartPrinterFlutter();
+  MethodChannelSmartPrinterFlutter();
 
   /// The current platform-specific implementation of [SmartPrinterFlutterPlatform].
   static SmartPrinterFlutterPlatform get instance => _instance;
@@ -166,4 +166,7 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
 
   /// A stream that emits a list of discovered Bluetooth peripherals.
   Stream<List<Peripheral>> get peripheralsStream;
+
+  /// Requests the current printer status (int code mapped in Dart).
+  Future<String> getPrinterStatus();
 }

@@ -39,6 +39,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
 
     private lateinit var applicationContext: Context
 
+    // private var printer: TSPLPrinter? = null //TODO ALY
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         applicationContext = flutterPluginBinding.applicationContext
@@ -117,6 +118,22 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
             "tspl_printImage" -> handleTsplPrintImage(call, result)
             "tspl_printPDF" -> handleTsplPrintPDF(call, result)
             "tspl_printPDFBase64" -> handleTsplPrintPDFBase64(call, result)
+
+            //"tspl_printStatus" -> handleTsplPrintStatus(result) //TODO ALY
+
+            "printStatus" -> {
+                val printer = bleManager?.tsplPrinter
+                if (printer == null) {
+                    result.error("NO_PRINTER", "Printer not connected", null)
+                    return
+                }
+
+                printer.printerStatus(1000) { statusCode ->
+                    result.success(statusCode) // kirim integer ke Flutter
+                }
+            }
+
+
             "initBleManager" -> {
                 initBleManager()
                 if (::bleManager.isInitialized) {

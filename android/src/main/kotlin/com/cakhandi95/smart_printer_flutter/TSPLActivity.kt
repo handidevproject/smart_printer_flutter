@@ -91,7 +91,6 @@ class TSPLActivity {
         val (widthMm, heightMm) = labelSize.value.split("x").mapNotNull { it.toIntOrNull() }
 
         val bitmaps = renderAllPagesFromPdf(pdfFile, widthMm.toDouble())
-        //val bitmaps = renderAllPagesFromPdf(file, widthMm, heightMm)
 
         for ((index, bitmap) in bitmaps.withIndex()) {
             println("Page $index → bitmap: ${bitmap.width}x${bitmap.height} → height: ${heightMm} mm")
@@ -164,6 +163,8 @@ class TSPLActivity {
                     )
                     .print(1)
             }
+        } catch (e: Exception) {
+            Log.e("TSPLActivity", "Error printing PDF: ${e.message}", e)
         } finally {
             isPrinting = false
         }

@@ -149,4 +149,7 @@ class SmartPrinterFlutter {
 
   /// Stream to listen to discovered peripherals.
   Stream<List<Peripheral>> get peripheralsStream => _platform.peripheralsStream;
+
+  /// Get the current printer status (human-readable string).
+  Future<String> getPrinterStatus() => _platform.getPrinterStatus();
 }

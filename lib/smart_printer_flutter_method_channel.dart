@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:smart_printer_flutter/printer_models.dart';
 import 'smart_printer_flutter_platform_interface.dart';
-import 'package:flutter/material.dart';
 
 /// Implementation of [SmartPrinterFlutterPlatform] using [MethodChannel].
 ///
@@ -17,16 +16,19 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
   static const MethodChannel _channel = MethodChannel('smart_printer_flutter');
 
   /// Event channel for receiving printer status updates.
-  static const EventChannel _statusEventChannel =
-      EventChannel('smart_printer_flutter/status');
+  static const EventChannel _statusEventChannel = EventChannel(
+    'smart_printer_flutter/status',
+  );
 
   /// Event channel for receiving scanning status (isScanning).
-  static const EventChannel _scanningEventChannel =
-      EventChannel('smart_printer_flutter/scanning');
+  static const EventChannel _scanningEventChannel = EventChannel(
+    'smart_printer_flutter/scanning',
+  );
 
   /// Event channel for receiving list of discovered Bluetooth peripherals.
-  static const EventChannel _peripheralsEventChannel =
-      EventChannel('smart_printer_flutter/peripherals');
+  static const EventChannel _peripheralsEventChannel = EventChannel(
+    'smart_printer_flutter/peripherals',
+  );
 
   /// Starts scanning for nearby Bluetooth devices.
   @override
@@ -50,6 +52,53 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
   @override
   Future<void> disconnect() async {
     await _channel.invokeMethod('disconnect');
+  }
+
+  // TODO ALY
+  /// Requests the current printer status from the native layer.
+  ///
+  /// This method calls a native function that returns an integer status code.
+  /// The integer code is then mapped into a human-readable status message.
+  ///
+  @override
+  Future<String> getPrinterStatus() async {
+    try {
+      final code = await _channel.invokeMethod<int>('printStatus') ?? -1;
+      switch (code) {
+        case 0:
+          return "Normal";
+        case 1:
+          return "Head opened";
+        case 2:
+          return "Paper Jam";
+        case 3:
+          return "Paper Jam and head opened";
+        case 4:
+          return "Out of paper";
+        case 5:
+          return "Out of paper and head opened";
+        case 8:
+          return "Out of ribbon";
+        case 9:
+          return "Out of ribbon and head opened";
+        case 10:
+          return "Out of ribbon and paper jam";
+        case 11:
+          return "Out of ribbon, paper jam and head opened";
+        case 12:
+          return "Out of ribbon and out of paper";
+        case 13:
+          return "Out of ribbon, out of paper and head opened";
+        case 16:
+          return "Pause";
+        case 32:
+          return "Printing";
+        default:
+          return "Other error ($code)";
+      }
+    } catch (e) {
+      return "Error: $e";
+    }
   }
 
   /// Returns whether a scan is currently in progress.
@@ -181,18 +230,35 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
   }
 
   /// Sends a PDF file path to be printed using TSPL.
+  bool _isPrinting = false;
+
   @override
   Future<void> tsplPrintPDF(String filePath, LabelSize labelSize) async {
-    await _channel.invokeMethod('tspl_printPDF', {
-      'filePath': filePath,
-      'label': labelSize.value,
-    });
+    if (_isPrinting) {
+      print('[Flutter] Skipping print, already in progress');
+      return;
+    }
+
+    _isPrinting = true;
+    try {
+      print('[Flutter] Calling tspl_printPDF...');
+      await _channel.invokeMethod('tspl_printPDF', {
+        'filePath': filePath,
+        'label': labelSize.value,
+      });
+    } catch (e) {
+      print('[Flutter] Error printing: $e');
+    } finally {
+      _isPrinting = false;
+    }
   }
 
   /// Sends a base64-encoded PDF to be printed using TSPL.
   @override
   Future<void> tsplPrintPDFBase64(
-      String base64Encoded, LabelSize labelSize) async {
+      String base64Encoded,
+      LabelSize labelSize,
+      ) async {
     await _channel.invokeMethod('tspl_printPDFBase64', {
       'base64': base64Encoded,
       'label': labelSize.value,
@@ -227,11 +293,12 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
     await requestBluetoothPermissions();
 
     try {
-      final success = await MethodChannel('smart_printer_flutter')
-          .invokeMethod('initBleManager');
-      debugPrint("BLE Manager initialized: $success");
+      final success = await MethodChannel(
+        'smart_printer_flutter',
+      ).invokeMethod('initBleManager');
+      print("BLE Manager initialized: $success");
     } on PlatformException catch (e) {
-      debugPrint("Gagal inisialisasi BLE: ${e.message}");
+      print("Gagal inisialisasi BLE: ${e.message}");
     }
   }
 
