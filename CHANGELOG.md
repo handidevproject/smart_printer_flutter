@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.0 - 2025-09-15
+### ✨ Features
+- **Printer**
+    - Add `getPrinterStatus` method to fetch and interpret printer status codes.
+- **Android**
+    - Implement native BLE logic to retrieve printer status.
+
+###  Fixes
+- **Printing**
+    - Add error handling and logging in `TSPLActivity`.
+    - Prevent concurrent PDF print jobs in Dart.
+### Chore
+- Minor cleanup and logging improvements.
+
+
 ## 0.0.6
 - Added proper MIT `LICENSE` file (replacing placeholder template).
 - Added `NOTICE` file to clarify usage of trademarks (XPrinter, TSPL, ZPL, ESC/POS).
