@@ -2,17 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.1 - 2025-09-26
+### ✨ Features
+- **Printer**
+  - Add `getPrinterStatus` method to fetch and interpret printer status codes.
+- **Android**
+  - Implement native BLE logic to retrieve printer status.
+
+### ♻️ Refactor
+- **PDF Rendering & Printing**
+  - Rework `renderAllPagesFromPdf` to calculate bitmap dimensions based on printer DPI and aspect ratio, with a 4mm safety margin.
+  - Update calls to `renderAllPagesFromPdf` to pass the `printer` object.
+- **TSPL Print Parameters**
+  - Adjust speed from `5.0` → `3.0`.
+  - Adjust density from `10` → `1`.
+  - Change reference point from `(20, 0)` → `(0, 0)`.
+- **Code Cleanup**
+  - Remove redundant author KDoc from `PdfUtils.kt`.
+
 ## 0.1.0 - 2025-09-15
 ### ✨ Features
 - **Printer**
-    - Add `getPrinterStatus` method to fetch and interpret printer status codes.
+  - Add `getPrinterStatus` method to fetch and interpret printer status codes.
 - **Android**
-    - Implement native BLE logic to retrieve printer status.
+  - Implement native BLE logic to retrieve printer status.
 
 ###  Fixes
 - **Printing**
-    - Add error handling and logging in `TSPLActivity`.
-    - Prevent concurrent PDF print jobs in Dart.
+  - Add error handling and logging in `TSPLActivity`.
+  - Prevent concurrent PDF print jobs in Dart.
 ### Chore
 - Minor cleanup and logging improvements.
 
