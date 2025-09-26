@@ -4,38 +4,38 @@ import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import androidx.core.graphics.createBitmap
+import net.posprinter.TSPLPrinter
 import java.io.File
-
-/**
- * Created by handy on 14/07/25.
- * it.handy@borwita.co.id / it.handy
- */
 
 fun renderAllPagesFromPdf(
     file: File,
-    labelWidthMm: Double,
+    widthMm: Double,
+    printer: TSPLPrinter,
+    dpi: Int? = null
 ): List<Bitmap> {
-    val result = mutableListOf<Bitmap>()
+    val bitmaps = mutableListOf<Bitmap>()
     val fileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
-    val pdfRenderer = PdfRenderer(fileDescriptor)
+    val renderer = PdfRenderer(fileDescriptor)
 
-    val dpi = 197
-    val dotsPerMm = dpi / 25.4
-    val targetWidthDots = (labelWidthMm * dotsPerMm).toInt()
+    val printerDpi = dpi ?: 203
 
-    for (i in 0 until pdfRenderer.pageCount) {
-        val page = pdfRenderer.openPage(i)
-        val scaleFactor = targetWidthDots.toFloat() / page.width.toFloat()
-        val targetHeightDots = (page.height * scaleFactor).toInt()
+    val safeWidthMm = widthMm - 4.0
+    val widthPx = ((safeWidthMm / 25.4) * printerDpi).toInt()
 
-        val bitmap = createBitmap(targetWidthDots, targetHeightDots, Bitmap.Config.ARGB_8888)
-        page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_PRINT)
-        result.add(bitmap)
-        page.close()
+
+    for (i in 0 until renderer.pageCount) {
+        renderer.openPage(i).use { page ->
+            val aspect = page.width.toFloat() / page.height.toFloat()
+            val heightPx = (widthPx / aspect).toInt()
+
+            val bitmap = createBitmap(widthPx, heightPx)
+            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_PRINT)
+
+            bitmaps.add(bitmap)
+        }
     }
 
-    pdfRenderer.close()
+    renderer.close()
     fileDescriptor.close()
-
-    return result
+    return bitmaps
 }

@@ -90,7 +90,13 @@ class TSPLActivity {
 
         val (widthMm, heightMm) = labelSize.value.split("x").mapNotNull { it.toIntOrNull() }
 
-        val bitmaps = renderAllPagesFromPdf(pdfFile, widthMm.toDouble())
+        val bitmaps = renderAllPagesFromPdf(
+            file = pdfFile,
+            widthMm = widthMm.toDouble(),
+            printer = printer
+        )
+
+        //val bitmaps = renderAllPagesFromPdf(file, widthMm, heightMm)
 
         for ((index, bitmap) in bitmaps.withIndex()) {
             println("Page $index → bitmap: ${bitmap.width}x${bitmap.height} → height: ${heightMm} mm")
@@ -99,10 +105,10 @@ class TSPLActivity {
                 .sizeMm(widthMm.toDouble(), heightMm.toDouble())
                 .gapInch(0.0, 0.0)
                 .offsetInch(0.0)
-                .speed(5.0)
-                .density(10)
+                .speed(3.0)
+                .density(1)
                 .direction(TSPLConst.DIRECTION_FORWARD)
-                .reference(20, 0)
+                .reference(0, 0)
                 .cls()
                 .bitmap(
                     0,
@@ -114,6 +120,25 @@ class TSPLActivity {
                 )
                 .print(1)
 
+            // printer
+            //     .sizeMm(widthMm.toDouble(), heightMm.toDouble())
+            //     .gapInch(0.0, 0.0)
+            //     .offsetInch(0.0)
+            //     .speed(5.0)
+            //     .density(10)
+            //     .direction(TSPLConst.DIRECTION_FORWARD)
+            //     .reference(20, 0)
+            //     .cls()
+            //     .bitmap(
+            //         0,
+            //         0,
+            //         TSPLConst.BMP_MODE_OVERWRITE,
+            //         bitmap.width,
+            //         bitmap,
+            //         AlgorithmType.Threshold
+            //     )
+            //     .print(1)
+
             // Optional: Delay per page
             // Thread.sleep(1000)
         }
@@ -121,6 +146,8 @@ class TSPLActivity {
         pdfFile.delete()
     }
 
+
+    // TODO ALY - handle isPrinted in print pdfFromPath
     var isPrinting = false
 
     @Synchronized
@@ -139,7 +166,11 @@ class TSPLActivity {
             }
 
             val (widthMm, heightMm) = attr.labelSize.value.split("x").mapNotNull { it.toIntOrNull() }
-            val bitmaps = renderAllPagesFromPdf(file, widthMm.toDouble())
+            val bitmaps = renderAllPagesFromPdf(
+                file = file,
+                widthMm = widthMm.toDouble(),
+                printer = printer
+            )
 
             for ((index, bitmap) in bitmaps.withIndex()) {
                 println("Page $index → bitmap: ${bitmap.width}x${bitmap.height} → height: ${heightMm.toDouble()} mm")
@@ -148,10 +179,10 @@ class TSPLActivity {
                     .sizeMm(widthMm.toDouble(), heightMm.toDouble())
                     .gapInch(0.0, 0.0)
                     .offsetInch(0.0)
-                    .speed(5.0)
-                    .density(10)
+                    .speed(3.0)
+                    .density(1)
                     .direction(TSPLConst.DIRECTION_FORWARD)
-                    .reference(20, 0)
+                    .reference(0, 0)
                     .cls()
                     .bitmap(
                         0,
@@ -162,6 +193,26 @@ class TSPLActivity {
                         AlgorithmType.Threshold
                     )
                     .print(1)
+
+                // printer
+                //     .sizeMm(widthMm.toDouble(), heightMm.toDouble())
+                //     .gapInch(0.0, 0.0)
+                //     .offsetInch(0.0)
+                //     .speed(5.0)
+                //     .density(10)
+                //     .direction(TSPLConst.DIRECTION_FORWARD)
+                //     .reference(20, 0)
+                //     .cls()
+                //     .bitmap(
+                //         0,
+                //         0,
+                //         TSPLConst.BMP_MODE_OVERWRITE,
+                //         bitmap.width,
+                //         bitmap,
+                //         AlgorithmType.Threshold
+                //     )
+                //     .print(1)
+
             }
         } catch (e: Exception) {
             Log.e("TSPLActivity", "Error printing PDF: ${e.message}", e)

@@ -162,7 +162,11 @@ data class TPdfAttr(
 
         val (widthMm, heightMm) = labelSize.value.split("x").mapNotNull { it.toIntOrNull() }
 
-        val bitmaps = renderAllPagesFromPdf(file, widthMm.toDouble())
+        val bitmaps = renderAllPagesFromPdf(
+            file = file,
+            widthMm = widthMm.toDouble(),
+            printer = printer
+        )
 
         //val bitmaps = renderAllPagesFromPdf(file, widthMm, heightMm)
 
@@ -171,8 +175,8 @@ data class TPdfAttr(
                 .sizeMm(widthMm.toDouble(), heightMm.toDouble())
                 .gapInch(0.0, 0.0)
                 .offsetInch(0.0)
-                .speed(5.0)
-                .density(10)
+                .speed(3.0)
+                .density(1)
                 .direction(TSPLConst.DIRECTION_FORWARD)
                 .reference(0, 0)
                 .cls()
@@ -185,9 +189,6 @@ data class TPdfAttr(
                     AlgorithmType.Threshold
                 )
                 .print(1)
-
-            // Optional: Delay per page
-            // Thread.sleep(500)
         }
     }
 }
