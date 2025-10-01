@@ -9,8 +9,26 @@ class MockSmartPrinterFlutterPlatform
     implements SmartPrinterFlutterPlatform {
 
   @override
-  Future<void> connect(String deviceId) {
-    // TODO: implement connect
+  Future<void> connectBluetooth(String mac) {
+    // TODO: implement connectBluetooth
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> connectEthernet(String ip) {
+    // TODO: implement connectEthernet
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> connectSerial(String port, String baudrate) {
+    // TODO: implement connectSerial
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> connectUSB(String path) {
+    // TODO: implement connectUSB
     throw UnimplementedError();
   }
 
@@ -116,30 +134,6 @@ class MockSmartPrinterFlutterPlatform
   @override
   Future<void> initializeBle() {
     // TODO: implement initializeBle
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> connectBluetooth(String mac) {
-    // TODO: implement connectBluetooth
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> connectEthernet(String ip) {
-    // TODO: implement connectEthernet
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> connectSerial(String port, String baudrate) {
-    // TODO: implement connectSerial
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> connectUSB(String path) {
-    // TODO: implement connectUSB
     throw UnimplementedError();
   }
 
