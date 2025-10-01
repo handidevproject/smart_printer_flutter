@@ -117,6 +117,8 @@ class _SelectDeviceState extends State<SelectDevice> {
                       title: Text(peripheral.name ?? ''),
                       subtitle: Text(peripheral.uuid ?? ''),
                       onTap: () {
+                        print('uuid: ${peripheral.uuid}');
+                        print('state: ${peripheral.state}');
                         if (peripheral.uuid == null ||
                             peripheral.state == PeripheralState.connected) {
                           return;

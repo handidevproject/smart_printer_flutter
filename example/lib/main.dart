@@ -170,12 +170,11 @@ class _MyAppState extends State<MyApp> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          if (isConnected) {
-                            if (_selectedMode == "NET") {
-                              _plugin.connectEthernet(_ipController.text);
-                            } else {
-                              _plugin.connectBluetooth(uuid);
-                            }
+                          print('uuid: $uuid');
+                          if (_selectedMode == "NET") {
+                            _plugin.connectEthernet(_ipController.text);
+                          } else {
+                            _plugin.connectBluetooth(uuid);
                           }
                         } ,
                         style: ElevatedButton.styleFrom(
