@@ -96,8 +96,6 @@ class TSPLActivity {
             printer = printer
         )
 
-        //val bitmaps = renderAllPagesFromPdf(file, widthMm, heightMm)
-
         for ((index, bitmap) in bitmaps.withIndex()) {
             println("Page $index → bitmap: ${bitmap.width}x${bitmap.height} → height: ${heightMm} mm")
 
@@ -119,33 +117,9 @@ class TSPLActivity {
                     AlgorithmType.Threshold
                 )
                 .print(1)
-
-            // printer
-            //     .sizeMm(widthMm.toDouble(), heightMm.toDouble())
-            //     .gapInch(0.0, 0.0)
-            //     .offsetInch(0.0)
-            //     .speed(5.0)
-            //     .density(10)
-            //     .direction(TSPLConst.DIRECTION_FORWARD)
-            //     .reference(20, 0)
-            //     .cls()
-            //     .bitmap(
-            //         0,
-            //         0,
-            //         TSPLConst.BMP_MODE_OVERWRITE,
-            //         bitmap.width,
-            //         bitmap,
-            //         AlgorithmType.Threshold
-            //     )
-            //     .print(1)
-
-            // Optional: Delay per page
-            // Thread.sleep(1000)
         }
-
         pdfFile.delete()
     }
-
 
     // TODO ALY - handle isPrinted in print pdfFromPath
     var isPrinting = false
