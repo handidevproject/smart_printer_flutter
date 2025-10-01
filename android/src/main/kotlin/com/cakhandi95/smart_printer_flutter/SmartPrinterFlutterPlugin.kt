@@ -30,8 +30,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
     private lateinit var statusChannel: EventChannel
     private lateinit var scanningChannel: EventChannel
     private lateinit var peripheralChannel: EventChannel
-    private lateinit var bleManager: BleManager
-
+    private lateinit var printerManager: PrinterManager
 
     private var statusEventSink: EventChannel.EventSink? = null
     private var scanningEventSink: EventChannel.EventSink? = null
@@ -56,19 +55,13 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
         scanningChannel.setStreamHandler(createStreamHandler { sink -> scanningEventSink = sink })
         peripheralChannel.setStreamHandler(createStreamHandler { sink -> peripheralEventSink = sink })
 
+        initPrinterManager()
     }
 
-    private fun initBleManager() {
-        if (::bleManager.isInitialized) return
+    private fun initPrinterManager() {
+        if (::printerManager.isInitialized) return
 
-        println("Initializing BleManager...")
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-            applicationContext.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
-            != PackageManager.PERMISSION_GRANTED) return
-        println("Masuk ke sini")
-
-        bleManager = BleManager(
+        printerManager = PrinterManager(
             context = applicationContext,
             onStatusChanged = { status -> statusEventSink?.success(status) },
             onScanningChanged = { scanningEventSink?.success(it) },
@@ -88,41 +81,61 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
         }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
-        if (!::bleManager.isInitialized) {
-            initBleManager()
-            if (!::bleManager.isInitialized) {
-                result.error("PERMISSION_DENIED", "BLUETOOTH_CONNECT is denied", null)
-                return
-            }
-        }
         when (call.method) {
 
-            // General handlers
-            "startScan" -> bleManager.startScan()
-            "stopScan" -> bleManager.stopScan()
-            "connect" -> handleConnect(call, result)
-            "isScanning" -> result.success(bleManager.isScanning)
-            "isConnected" -> result.success(bleManager.isConnected)
-            "disconnect" -> bleManager.disconnect()
+            // Scan Bluetooth
+            "startScan" -> printerManager.startScan()
+            "stopScan" -> printerManager.stopScan()
 
-            // POS printer handlers
+            // Connection
+            "connectBluetooth" -> {
+                val mac = call.argument<String>("mac") ?: return result.error("INVALID_ARGUMENTS", "mac required", null)
+                printerManager.connectBluetooth(mac)
+                result.success(null)
+            }
+
+            "connectEthernet" -> {
+                val ip = call.argument<String>("ip") ?: return result.error("INVALID_ARGUMENTS", "ip required", null)
+                printerManager.connectEthernet(ip)
+                result.success(null)
+            }
+
+            "connectUSB" -> {
+                val path = call.argument<String>("path") ?: return result.error("INVALID_ARGUMENTS", "path required", null)
+                printerManager.connectUSB(path)
+                result.success(null)
+            }
+
+            "connectSerial" -> {
+                val port = call.argument<String>("port") ?: return result.error("INVALID_ARGUMENTS", "port required", null)
+                val baud = call.argument<String>("baudrate") ?: return result.error("INVALID_ARGUMENTS", "baudrate required", null)
+                printerManager.connectSerial(port, baud)
+                result.success(null)
+            }
+
+            "disconnect" -> {
+                printerManager.disconnect()
+                result.success(null)
+            }
+
+            "isScanning" -> result.success(printerManager.isScanning)
+            "isConnected" -> result.success(printerManager.isConnected)
+
+            // === Printer actions (POS / TSPL) ===
             "pos_printText" -> handlePrintText(call, result)
             "pos_printImage" -> handlePrintImage(call, result)
             "pos_printQRCode" -> handlePrintQRCode(call, result)
             "pos_printBarcode" -> handlePrintBarcode(call, result)
             "cutPaper" -> handlePosCut(result)
 
-            // TSPL printer handlers
             "tspl_printText" -> handleTsplPrintText(call, result)
             "tspl_printQRCode" -> handleTsplPrintQRCode(call, result)
             "tspl_printImage" -> handleTsplPrintImage(call, result)
             "tspl_printPDF" -> handleTsplPrintPDF(call, result)
             "tspl_printPDFBase64" -> handleTsplPrintPDFBase64(call, result)
 
-            //"tspl_printStatus" -> handleTsplPrintStatus(result) //TODO ALY
-
             "printStatus" -> {
-                val printer = bleManager?.tsplPrinter
+                val printer = printerManager.tsplPrinter
                 if (printer == null) {
                     result.error("NO_PRINTER", "Printer not connected", null)
                     return
@@ -130,16 +143,6 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
 
                 printer.printerStatus(1000) { statusCode ->
                     result.success(statusCode) // kirim integer ke Flutter
-                }
-            }
-
-
-            "initBleManager" -> {
-                initBleManager()
-                if (::bleManager.isInitialized) {
-                    result.success(true)
-                } else {
-                    result.error("PERMISSION_DENIED", "BLUETOOTH_CONNECT is denied", null)
                 }
             }
 
@@ -154,14 +157,6 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
         peripheralChannel.setStreamHandler(null)
     }
 
-    private fun handleConnect(call: MethodCall, result: Result) {
-        val deviceId = (call.argument<String>("deviceId") ?: "").ifEmpty {
-            result.error("INVALID_ARGUMENTS", "deviceId required", null); return
-        }
-        bleManager.connectToDevice(deviceId)
-        result.success(null)
-    }
-
     /** POSPrinter */
     private fun handlePrintText(call: MethodCall, result: Result) {
 
@@ -170,13 +165,13 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
             return
         }
 
-        if (bleManager.posPrinter == null) {
+        if (printerManager.posPrinter == null) {
             invalidPrinter(result)
             return
         }
 
         val attr = TextAttr.from(args)
-        PosActivity.instance.printText(attr, bleManager.posPrinter!!)
+        PosActivity.instance.printText(attr, printerManager.posPrinter!!)
     }
 
     private fun handlePrintImage(call: MethodCall, result: Result) {
@@ -190,7 +185,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
             return
         }
 
-        if (bleManager.posPrinter == null) {
+        if (printerManager.posPrinter == null) {
             invalidPrinter(result)
             return
         }
@@ -200,7 +195,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
         PosActivity.instance.printImage(
             base64Encoded,
             width.toInt(),
-            bleManager.posPrinter!!
+            printerManager.posPrinter!!
         )
     }
 
@@ -212,7 +207,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
 
         val attr = QrcodeAttr.from(args);
 
-        PosActivity.instance.printQRCode(bleManager.posPrinter!!, attr)
+        PosActivity.instance.printQRCode(printerManager.posPrinter!!, attr)
     }
 
     private fun handlePrintBarcode(call: MethodCall, result: Result) {
@@ -222,11 +217,11 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
         }
 
         val attr = BarcodeAttr.from(args)
-        PosActivity.instance.printBarcode(bleManager.posPrinter!!, attr)
+        PosActivity.instance.printBarcode(printerManager.posPrinter!!, attr)
     }
 
     private fun handlePosCut(result: Result) {
-        bleManager.posPrinter?.let {
+        printerManager.posPrinter?.let {
             PosActivity.instance.cutPaper(it)
             result.success(null)
         } ?: invalidPrinter(result)
@@ -236,7 +231,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
     private fun handleTsplPrintText(call: MethodCall, result: Result) {
         val args = call.arguments as? Map<String, Any> ?: return invalidArgs(result)
 
-        val printer = bleManager.tsplPrinter ?: return invalidPrinter(result)
+        val printer = printerManager.tsplPrinter ?: return invalidPrinter(result)
 
         val attr = TextAttr.from(args)
         TSPLActivity.instance.printText(attr, printer)
@@ -247,7 +242,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
     private fun handleTsplPrintQRCode(call: MethodCall, result: Result) {
         val args = call.arguments as? Map<String, Any> ?: return invalidArgs(result)
 
-        val printer = bleManager.tsplPrinter ?: return invalidPrinter(result)
+        val printer = printerManager.tsplPrinter ?: return invalidPrinter(result)
 
         val attr = QrcodeAttr.from(args)
         TSPLActivity.instance.printQRCode(printer, attr)
@@ -273,7 +268,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
                 else -> 600 // default
             }
 
-            val printer = bleManager.tsplPrinter
+            val printer = printerManager.tsplPrinter
             if (printer == null) return invalidPrinter(result)
 
             TSPLActivity.instance.printImage(base64, width, printer)
@@ -306,7 +301,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
 
             val attr = TPdfAttr(filePath = filePath, labelSize = label)
 
-            val printer = bleManager.tsplPrinter
+            val printer = printerManager.tsplPrinter
             if (printer == null) {
                 invalidPrinter(result)
                 return
@@ -337,7 +332,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
             val labelRaw = args["label"] as? String
             val label = LabelSize.from(labelRaw)
 
-            val printer = bleManager.tsplPrinter
+            val printer = printerManager.tsplPrinter
             if (printer == null) {
                 invalidPrinter(result)
                 return
