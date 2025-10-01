@@ -97,7 +97,7 @@ class _MyAppState extends State<MyApp> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                           builder: (context) =>
-                              SelectDevice(plugin: _plugin,)),
+                              SelectDevice(plugin: _plugin)),
                     );
                   },
                   child: Container(
@@ -135,17 +135,13 @@ class _MyAppState extends State<MyApp> {
                     dropdownColor: Colors.green,
                     style: const TextStyle(color: Colors.green),
                     itemHeight: 70,
-                    items: _modes
-                        .map(
-                          (mode) => DropdownMenuItem(
-                        value: mode,
-                        child: Text(
-                          mode,
-                          style: const TextStyle(color: Colors.black),
-                        ),
+                    items: _modes.map((mode) => DropdownMenuItem(
+                      value: mode,
+                      child: Text(
+                        mode,
+                        style: const TextStyle(color: Colors.black),
                       ),
-                    )
-                        .toList(),
+                    )).toList(),
                     onChanged: (value) {
                       setState(() => _selectedMode = value!);
                       if (_selectedMode == "BT") {
@@ -219,7 +215,7 @@ class _MyAppState extends State<MyApp> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                                 builder: (context) =>
-                                PosPrinterScreen(plugin: _plugin,)),
+                                    PosPrinterScreen(plugin: _plugin,)),
                           );
                         } : null,
                         style: ElevatedButton.styleFrom(
@@ -236,7 +232,6 @@ class _MyAppState extends State<MyApp> {
                       ),
 
                       const SizedBox(height: 8),
-
 
                       ElevatedButton(
                         onPressed: isConnected
