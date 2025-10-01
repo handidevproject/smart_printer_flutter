@@ -42,10 +42,39 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
     await _channel.invokeMethod('stopScan');
   }
 
-  /// Connects to a Bluetooth device using its unique [deviceId].
+  /// Connects to a printer via Bluetooth using the printer's [mac] address.
+  ///
+  /// Example: await connectBluetooth("00:11:22:33:44:55");
   @override
-  Future<void> connect(String deviceId) async {
-    await _channel.invokeMethod('connect', {'deviceId': deviceId});
+  Future<void> connectBluetooth(String mac) async {
+    await _channel.invokeMethod("connectBluetooth", {"mac": mac});
+  }
+
+  /// Connects to a printer over Ethernet using the provided [ip] address.
+  ///
+  /// Example: await connectEthernet("192.168.0.100");
+  @override
+  Future<void> connectEthernet(String ip) async {
+    await _channel.invokeMethod("connectEthernet", {"ip": ip});
+  }
+
+  /// Connects to a printer via Serial (COM) port with a given [port] and [baudrate].
+  ///
+  /// Example: await connectSerial("COM3", "9600");
+  @override
+  Future<void> connectSerial(String port, String baudrate) async {
+    await _channel.invokeMethod("connectSerial", {
+      "port": port,
+      "baudrate": baudrate,
+    });
+  }
+
+  /// Connects to a printer via USB using the device [path].
+  ///
+  /// Example: await connectUSB("/dev/usb/lp0");
+  @override
+  Future<void> connectUSB(String path) async {
+    await _channel.invokeMethod("connectUSB", {"path": path});
   }
 
   /// Disconnects the currently connected Bluetooth device.
