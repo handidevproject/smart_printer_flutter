@@ -35,8 +35,25 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
   /// Stops the Bluetooth scanning process.
   Future<void> stopScan();
 
-  /// Connects to a printer using its unique [deviceId].
-  Future<void> connect(String deviceId);
+  /// Connects to a printer over Ethernet using the provided [ip] address.
+  ///
+  /// Example: await connectEthernet("192.168.0.100");
+  Future<void> connectEthernet(String ip);
+
+  /// Connects to a printer via Bluetooth using the printer's [mac] address.
+  ///
+  /// Example: await connectBluetooth("00:11:22:33:44:55");
+  Future<void> connectBluetooth(String mac);
+
+  /// Connects to a printer via USB using the device [path].
+  ///
+  /// Example: await connectUSB("/dev/usb/lp0");
+  Future<void> connectUSB(String path);
+
+  /// Connects to a printer via Serial (COM) port with a given [port] and [baudrate].
+  ///
+  /// Example: await connectSerial("COM3", "9600");
+  Future<void> connectSerial(String port, String baudrate);
 
   /// Disconnects from the currently connected printer.
   Future<void> disconnect();

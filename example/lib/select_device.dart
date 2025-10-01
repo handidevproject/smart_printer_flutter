@@ -90,7 +90,7 @@ class _SelectDeviceState extends State<SelectDevice> {
                             peripheral.state == PeripheralState.connected) {
                           return;
                         }
-                        widget.plugin.connect(peripheral.uuid!);
+                        widget.plugin.connectBluetooth(peripheral.uuid!);
                       },
                     );
                   },
