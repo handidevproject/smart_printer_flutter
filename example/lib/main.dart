@@ -37,18 +37,6 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  void _connect() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Connected via $_selectedMode")),
-    );
-  }
-
-  void _disconnect() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Disconnected")),
-    );
-  }
-
   Future<void> requestBluetoothPermissions() async {
     if (!Platform.isAndroid) return;
 
@@ -98,16 +86,33 @@ class _MyAppState extends State<MyApp> {
         );
       default:
         return Expanded(
-          child: Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
-            color: Colors.green,
-            child: const Text(
-              "please select device",
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
+          child: StreamBuilder(
+              stream: _plugin.statusStream,
+              initialData: PrinterStatus(statusInt: 2),
+              builder: (context, snapshot) {
+                final status = snapshot.data ?? PrinterStatus(statusInt: 2);
+                String uuid = status.uuid ?? "please select device";
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              SelectDevice(plugin: _plugin,)),
+                    );
+                  },
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
+                    color: Colors.green,
+                    child: Text(
+                      uuid,
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+              }
           ),
-        );;
+        );
     }
   }
 
