@@ -5,6 +5,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:smart_printer_flutter/smart_printer_flutter.dart';
+import 'package:smart_printer_flutter_example/screens/pos_printer_screen.dart';
+import 'package:smart_printer_flutter_example/screens/tspl_printer_screen.dart';
 import 'select_device.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
@@ -22,28 +24,17 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final _plugin = SmartPrinterFlutter();
-  final contentController = TextEditingController();
 
-  bool _isConnected = false;
+  final TextEditingController _ipController =
+  TextEditingController(text: "192.168.1.10");
+
+  final List<String> _modes = ["NET", "BT"];
+
+  String _selectedMode = "NET";
 
   @override
   void initState() {
     super.initState();
-
-    requestBluetoothPermissions().then((_) {
-      debugPrint("Bluetooth permissions granted");
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) {
-          _getCurrentState();
-        },
-      );
-
-      _plugin.statusStream.listen((event) {
-        _getCurrentState();
-      });
-    }).catchError((error) {
-      debugPrint("Error requesting Bluetooth permissions: $error");
-    });
   }
 
   Future<void> requestBluetoothPermissions() async {
@@ -73,12 +64,56 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void _getCurrentState() {
-    _plugin.isConnected.then((value) {
-      setState(() {
-        _isConnected = value;
-      });
-    });
+  Widget _buildInputField() {
+    switch (_selectedMode) {
+      case "NET":
+        return Expanded(
+          child: TextField(
+            controller: _ipController,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.green,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
+      default:
+        return Expanded(
+          child: StreamBuilder(
+              stream: _plugin.statusStream,
+              initialData: PrinterStatus(statusInt: 2),
+              builder: (context, snapshot) {
+                final status = snapshot.data ?? PrinterStatus(statusInt: 2);
+                String uuid = status.uuid ?? "please select device";
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              SelectDevice(plugin: _plugin)),
+                    );
+                  },
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
+                    color: Colors.green,
+                    child: Text(
+                      uuid,
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+              }
+          ),
+        );
+    }
   }
 
   @override
@@ -86,194 +121,147 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('XPrinter Plugin Example'),
+          title: const Text('Smart Printer Flutter - Demo'),
         ),
-        body: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: StreamBuilder<PrinterStatus>(
-                    stream: _plugin.statusStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.data == null) {
-                        return Column(
-                          children: [
-                            _isConnected
-                                ? const Text('connected')
-                                : const Text('disconnected'),
-                            if (_isConnected) _buildDisconnectButton(),
-                          ],
-                        );
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            children: [
+              // Dropdown + Field
+              Row(
+                children: [
+                  DropdownButton<String>(
+                    value: _selectedMode,
+                    dropdownColor: Colors.green,
+                    style: const TextStyle(color: Colors.green),
+                    itemHeight: 70,
+                    items: _modes.map((mode) => DropdownMenuItem(
+                      value: mode,
+                      child: Text(
+                        mode,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    )).toList(),
+                    onChanged: (value) {
+                      setState(() => _selectedMode = value!);
+                      if (_selectedMode == "BT") {
+                        requestBluetoothPermissions().then((_) {
+                          debugPrint("Bluetooth permissions granted");
+                        });
                       }
-                      return Column(
-                        children: [
-                          Text('${snapshot.data?.status.name}'),
-                          if (snapshot.data?.status ==
-                              PeripheralStatus.connected)
-                            _buildDisconnectButton(),
-                        ],
-                      );
                     },
                   ),
-                ),
-                Expanded(
-                  child: Builder(builder: (context) {
-                    return TextButton(
-                      onPressed: () {
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) {
-                          return SelectDevice(plugin: _plugin);
-                        }));
-                      },
-                      child: const Text('Select Device'),
-                    );
-                  }),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: TextFormField(
-                controller: contentController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Content',
-                ),
-                minLines: 2,
-                maxLines: 5,
+                  const SizedBox(width: 8),
+                  _buildInputField(),
+                ],
               ),
-            ),
-            Expanded(child: Container()),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: _printText,
-                    child: const Text('Print Text'),
-                  ),
-                ),
-                Expanded(
-                  child: TextButton(
-                    onPressed: _selectImage,
-                    child: const Text('Print Image'),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: _cutPaper,
-                    child: const Text('Cut Paper'),
-                  ),
-                ),
-                Expanded(
-                  child: TextButton(
-                    onPressed: _printExample,
-                    child: const Text('Print Example'),
-                  ),
-                ),
-              ],
-            ),
-          ],
+
+              const SizedBox(height: 36),
+
+              // StreamBuilder untuk listen status koneksi
+              StreamBuilder<PrinterStatus>(
+                stream: _plugin.statusStream,
+                initialData: PrinterStatus(statusInt: 2),
+                builder: (context, snapshot) {
+                  final status = snapshot.data ?? PrinterStatus(statusInt: 2);
+                  final isConnected = status.status == PeripheralStatus.connected;
+                  final uuid = status.uuid ?? "-";
+                  return Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          print('uuid: $uuid');
+                          if (_selectedMode == "NET") {
+                            _plugin.connectEthernet(_ipController.text);
+                          } else {
+                            _plugin.connectBluetooth(uuid);
+                          }
+                        } ,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: const Text(
+                          "CONNECT",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      ElevatedButton(
+                        onPressed: isConnected ? _plugin.disconnect : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                          isConnected ? Colors.green : Colors.grey,
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: const Text(
+                          "DISCONNECT",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      ElevatedButton(
+                        onPressed: isConnected
+                            ? () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    PosPrinterScreen(plugin: _plugin,)),
+                          );
+                        } : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                          isConnected ? Colors.green : Colors.grey,
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: const Text(
+                          "START POS PRINTER",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      ElevatedButton(
+                        onPressed: isConnected
+                            ? () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    TsplScreen(plugin: _plugin,)),
+                          );
+                        } : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                          isConnected ? Colors.green : Colors.grey,
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: const Text(
+                          "START TSPL PRINTER",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ),
+
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
-  }
-
-  TextButton _buildDisconnectButton() {
-    return TextButton(
-      onPressed: () {
-        _plugin.disconnect();
-      },
-      child: const Text('Disconnect'),
-    );
-  }
-
-  void _printText() {
-    _plugin.posPrintText(contentController.text);
-  }
-
-  void _cutPaper() {
-    _plugin.cutPaper();
-  }
-
-  void _printExample() {
-    _plugin.posPrintText('=======================================');
-    _plugin.posPrintText("Left");
-    _plugin.posPrintText(
-      "Center",
-      align: PTextAlign.center,
-    );
-    _plugin.posPrintText(
-      "Right",
-      align: PTextAlign.right,
-    );
-
-    _plugin.posPrintText('=======================================');
-    _plugin.posPrintText("FontB", attribute: PTextAttribute.fontB);
-    _plugin.posPrintText("Bold", attribute: PTextAttribute.bold);
-    _plugin.posPrintText(
-      "Underline",
-      attribute: PTextAttribute.underline,
-    );
-    _plugin.posPrintText(
-      "Underline2",
-      attribute: PTextAttribute.underline2,
-    );
-    _plugin.posPrintText('=======================================');
-    _plugin.posPrintText(
-      "W1",
-      width: PTextW.w2,
-      height: PTextH.h2,
-    );
-    _plugin.posPrintText(
-      "W2",
-      width: PTextW.w2,
-      height: PTextH.h2,
-    );
-    _plugin.posPrintText(
-      "W3",
-      width: PTextW.w3,
-      height: PTextH.h3,
-    );
-    _plugin.posPrintText(
-      "W4",
-      width: PTextW.w4,
-      height: PTextH.h4,
-    );
-
-    _plugin.cutPaper();
-  }
-
-  void _selectImage() async {
-    final ImagePicker picker = ImagePicker();
-
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      _printImage(image);
-    }
-  }
-
-  void _printImage(XFile file) async {
-    final img.Image? image = img.decodeImage(await file.readAsBytes());
-
-    if (image != null) {
-      final img.Image resizedImage = img.copyResize(image, width: 460);
-
-      final List<int> compressedImage = img.encodePng(resizedImage);
-
-      final String base64Image = base64Encode(compressedImage);
-
-      _plugin.posPrintImage(base64Image, 460.0);
-      _plugin.cutPaper();
-    } else {
-      debugPrint('Failed to decode image');
-    }
   }
 }

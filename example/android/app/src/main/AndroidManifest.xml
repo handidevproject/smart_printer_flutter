@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="smart_printer_flutter_example"
+        android:label="smart_printer_flutter"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

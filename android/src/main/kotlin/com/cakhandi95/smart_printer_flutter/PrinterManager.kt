@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.util.Log
 import com.cakhandi95.smart_printer_flutter.models.PeripheralStatus
 import net.posprinter.IConnectListener
@@ -17,46 +18,52 @@ import net.posprinter.POSPrinter
 import net.posprinter.TSPLPrinter
 
 /**
- * Created by handy on 14/07/25.
- * it.handy@borwita.co.id / it.handy
+ * Created by handy on 01/10/25.
+ * handi.tech.project@gmail.com / handytechproject (Github)
  */
-class BleManager(
+
+class PrinterManager (
     private val context: Context,
     val onDevicesChanged: (devices: ArrayList<BluetoothDevice>) -> Unit,
     val onStatusChanged: (status: Map<String, Any?>) -> Unit,
     val onScanningChanged: (isScanning: Boolean) -> Unit,
 ) {
-    private val TAG = "BleManager"
+
+    private val TAG = "PRINTER_MANAGER"
     private val bluetoothAdapter: BluetoothAdapter by lazy {
         (context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
     }
 
     private var curConnect: IDeviceConnection? = null
-
-    val posPrinter: POSPrinter?
-        get() = curConnect?.let { POSPrinter(it) }
-
-    val tsplPrinter: TSPLPrinter?
-        get() = curConnect?.let { TSPLPrinter(it) }
-
-    val isConnected: Boolean
-        get() = _isConnected
-
-    val isScanning: Boolean
-        get() = bluetoothAdapter.isDiscovering
-
     private var _isConnected: Boolean = false
+
+    val posPrinter: POSPrinter? get() = curConnect?.let {
+        POSPrinter(it)
+    }
+
+    val tsplPrinter: TSPLPrinter? get() = curConnect?.let {
+        TSPLPrinter(it)
+    }
+
+    val isConnected: Boolean get() = _isConnected
+
+    val isScanning: Boolean get() = bluetoothAdapter.isDiscovering
 
     private val devices: ArrayList<BluetoothDevice> = arrayListOf()
 
+    // --- Bluetooth scanning ---
     private val mBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == BluetoothDevice.ACTION_FOUND) {
-                val device =
-                    intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE) ?: return
-
+                val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                }
+                device ?: return
                 if (device.type == BluetoothDevice.DEVICE_TYPE_LE) return
-                if (deviceIsExist(device.address)) return
+                if (devices.any { it.address == device.address }) return
 
                 if (device.bondState == BluetoothDevice.BOND_BONDED || device.name != null) {
                     devices.add(device)
@@ -74,7 +81,6 @@ class BleManager(
             mBroadcastReceiver,
             IntentFilter(BluetoothDevice.ACTION_FOUND)
         )
-
         onScanningChanged(bluetoothAdapter.isDiscovering)
     }
 
@@ -90,18 +96,36 @@ class BleManager(
 
     @SuppressLint("MissingPermission")
     fun stopScan() {
+        Log.d(TAG, "Stop scan")
         if (bluetoothAdapter.isDiscovering) {
             bluetoothAdapter.cancelDiscovery()
             onScanningChanged(false)
         }
     }
 
-    @SuppressLint("MissingPermission")
-    fun connectToDevice(mac: String) {
+    // --- Connect Methods ---
+    fun connectBluetooth(mac: String) {
+        connect(POSConnect.DEVICE_TYPE_BLUETOOTH, mac)
+    }
+
+    fun connectEthernet(ipAddress: String) {
+        connect(POSConnect.DEVICE_TYPE_ETHERNET, ipAddress)
+    }
+
+    fun connectUSB(path: String) {
+        connect(POSConnect.DEVICE_TYPE_USB, path)
+    }
+
+    fun connectSerial(port: String, baudrate: String) {
+        connect(POSConnect.DEVICE_TYPE_SERIAL, "$port,$baudrate")
+    }
+
+    private fun connect(type: Int, address: String) {
+        Log.d(TAG, "connect $type $address ||| status: ${mapOf("status" to PeripheralStatus.CONNECTING.value)}" )
         onStatusChanged(mapOf("status" to PeripheralStatus.CONNECTING.value))
         curConnect?.close()
-        curConnect = POSConnect.createDevice(POSConnect.DEVICE_TYPE_BLUETOOTH)
-        curConnect?.connect(mac, connectListener)
+        curConnect = POSConnect.createDevice(type)
+        curConnect?.connect(address, connectListener)
     }
 
     fun disconnect() {
@@ -109,13 +133,21 @@ class BleManager(
         curConnect?.close()
         curConnect = null
         onStatusChanged(mapOf("status" to PeripheralStatus.DISCONNECTED.value))
+        Log.d(TAG, "disconnect - status: ${mapOf("status" to PeripheralStatus.DISCONNECTED.value)}" )
     }
 
-    private fun deviceIsExist(address: String): Boolean {
-        return devices.any { it.address == address }
+    private fun reconnectWithDelay(address: String, delayMs: Long = 3000) {
+        Log.d(TAG, "Schedule reconnect in ${delayMs}ms -> $address")
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            Log.d(TAG, "Trying reconnect to $address")
+            curConnect?.close()
+            curConnect = POSConnect.createDevice(POSConnect.DEVICE_TYPE_ETHERNET)
+            curConnect?.connect(address, connectListener)
+        }, delayMs)
     }
 
     private val connectListener = IConnectListener { code, address, msg ->
+        println("$TAG connectListener $code $address $msg")
         when (code) {
             POSConnect.CONNECT_SUCCESS -> {
                 _isConnected = true
@@ -132,7 +164,7 @@ class BleManager(
                 onStatusChanged(
                     mapOf(
                         "status" to PeripheralStatus.CONNECT_FAILED.value,
-                        "statusMessage" to msg,
+                        "statusMessage" to (msg ?: "Unknown error"),
                         "uuid" to address
                     )
                 )
@@ -143,10 +175,15 @@ class BleManager(
                 onStatusChanged(
                     mapOf(
                         "status" to PeripheralStatus.DISCONNECTED.value,
+                        "statusMessage" to "Connection interrupted",
                         "uuid" to address
                     )
                 )
+                // optional: coba auto reconnect setelah delay
+                reconnectWithDelay(address)
             }
         }
     }
+
+
 }
