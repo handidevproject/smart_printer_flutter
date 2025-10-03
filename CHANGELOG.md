@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.0 - 2025-10-03
+### ✨ Features
+- **Printer Connections**
+  - Added support for multiple printer connection types:
+    - `connectBluetooth(String mac)`
+    - `connectEthernet(String ip)`
+    - `connectSerial(String port, String baudrate)`
+    - `connectUSB(String path)`
+- **Dart API**
+  - Updated Dart interface, method channel, and example app to align with new connection methods.
+- **Testing**
+  - Added TODOs for upcoming test implementations.
+  - Removed unused test code in `smart_printer_flutter_method_channel_test.dart`.
+
+### ♻️ Refactor
+- **Core Manager**
+  - Renamed `BleManager` → `PrinterManager` to reflect broader responsibilities.
+  - Integrated Ethernet, USB, and Serial support into `PrinterManager`.
+- **Plugin Integration**
+  - Updated `SmartPrinterFlutterPlugin` to use the new `PrinterManager`.
+- **Bluetooth**
+  - Refactored Bluetooth device discovery to use modern Android APIs.
+- **Mocks**
+  - Reorganized mock `SmartPrinterFlutterPlatform` to group connection methods together.
+
+### 🧹 Cleanup
+- Removed commented-out code related to bitmap rendering and TSPL commands in `TSPLActivity.kt`.
+- Removed unnecessary `Thread.sleep(1000)` delay.
+- Deleted outdated TODO related to `isPrinted` in `printPdfFromPath`.
+
 ## 0.1.1 - 2025-09-26
 ### ✨ Features
 - **Printer**
