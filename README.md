@@ -7,21 +7,21 @@ Currently supports **ESC/POS commands**, and **TSPL (on development)** for label
 
 ## Features
 
-| Feature                |      Android       |        iOS         | Description                                                |
-| :--------------------- | :----------------: | :----------------: | :--------------------------------------------------------- |
-| Scan                   | :white_check_mark: | :white_check_mark: | Starts scanning for Bluetooth devices.                     |
-| Connect                | :white_check_mark: | :white_check_mark: | Establishes a connection to the Bluetooth printer.         |
-| Disconnect             | :white_check_mark: | :white_check_mark: | Cancels an active or pending connection to the printer.    |
-| State                  | :white_check_mark: | :white_check_mark: | Stream of state changes for the Bluetooth device.          |
-| Print Text             | :white_check_mark: | :white_check_mark: | Prints text with various formatting options.               |
-| Print QR Code          | :white_check_mark: | :white_check_mark: | Prints a QR code with specified data and error correction. |
-| Print Barcode          | :white_check_mark: | :white_check_mark: | Prints a barcode with specified type and content.          |
-| Print Image            | :white_check_mark: | :white_check_mark: | Prints images from base64 encoded strings.                 |
-| Cut Paper              | :white_check_mark: | :white_check_mark: | Sends a command to the printer to cut the paper.           |
-| Monitor Printer Status | :white_check_mark: | :white_check_mark: | Streams updates on printer status and peripherals.         |
-| Is Scanning Stream     | :white_check_mark: | :white_check_mark: | Streams the scanning status of the printer.                |
-| Is Connected           | :white_check_mark: | :white_check_mark: | Checks if the printer is currently connected.              |
-| TSPL (Label Printer)   | :white_check_mark: |   🚧 in progress   | Add support for TSPL command set (labels, stickers, etc).  |
+| Feature                |      Android       |      iOS       | Description                                                |
+| :--------------------- | :----------------: |:--------------:| :--------------------------------------------------------- |
+| Scan                   | :white_check_mark: | 🚧 in progress | Starts scanning for Bluetooth devices.                     |
+| Connect                | :white_check_mark: | 🚧 in progress | Establishes a connection to the Bluetooth printer.         |
+| Disconnect             | :white_check_mark: | 🚧 in progress | Cancels an active or pending connection to the printer.    |
+| State                  | :white_check_mark: | 🚧 in progress | Stream of state changes for the Bluetooth device.          |
+| Print Text             | :white_check_mark: | 🚧 in progress | Prints text with various formatting options.               |
+| Print QR Code          | :white_check_mark: | 🚧 in progress | Prints a QR code with specified data and error correction. |
+| Print Barcode          | :white_check_mark: | 🚧 in progress | Prints a barcode with specified type and content.          |
+| Print Image            | :white_check_mark: | 🚧 in progress | Prints images from base64 encoded strings.                 |
+| Cut Paper              | :white_check_mark: | 🚧 in progress | Sends a command to the printer to cut the paper.           |
+| Monitor Printer Status | :white_check_mark: | 🚧 in progress | Streams updates on printer status and peripherals.         |
+| Is Scanning Stream     | :white_check_mark: | 🚧 in progress | Streams the scanning status of the printer.                |
+| Is Connected           | :white_check_mark: | 🚧 in progress | Checks if the printer is currently connected.              |
+| TSPL (Label Printer)   | :white_check_mark: | 🚧 in progress | Add support for TSPL command set (labels, stickers, etc).  |
 
 ## Getting Started
 
