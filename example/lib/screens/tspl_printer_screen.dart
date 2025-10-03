@@ -48,9 +48,9 @@ class _TsplScreenState extends State<TsplScreen> {
                 return Column(
                   children: [
                     ElevatedButton(
-                      onPressed: isConnected ? () {
+                      onPressed:() {
                         _plugin.tsplPrintText('My Name is Handy');
-                      } : null,
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         minimumSize: const Size(double.infinity, 50),
