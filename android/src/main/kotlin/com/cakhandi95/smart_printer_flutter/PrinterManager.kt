@@ -136,7 +136,18 @@ class PrinterManager (
         Log.d(TAG, "disconnect - status: ${mapOf("status" to PeripheralStatus.DISCONNECTED.value)}" )
     }
 
+    private fun reconnectWithDelay(address: String, delayMs: Long = 3000) {
+        Log.d(TAG, "Schedule reconnect in ${delayMs}ms -> $address")
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            Log.d(TAG, "Trying reconnect to $address")
+            curConnect?.close()
+            curConnect = POSConnect.createDevice(POSConnect.DEVICE_TYPE_ETHERNET)
+            curConnect?.connect(address, connectListener)
+        }, delayMs)
+    }
+
     private val connectListener = IConnectListener { code, address, msg ->
+        println("$TAG connectListener $code $address $msg")
         when (code) {
             POSConnect.CONNECT_SUCCESS -> {
                 _isConnected = true
@@ -153,7 +164,7 @@ class PrinterManager (
                 onStatusChanged(
                     mapOf(
                         "status" to PeripheralStatus.CONNECT_FAILED.value,
-                        "statusMessage" to msg,
+                        "statusMessage" to (msg ?: "Unknown error"),
                         "uuid" to address
                     )
                 )
@@ -164,9 +175,12 @@ class PrinterManager (
                 onStatusChanged(
                     mapOf(
                         "status" to PeripheralStatus.DISCONNECTED.value,
+                        "statusMessage" to "Connection interrupted",
                         "uuid" to address
                     )
                 )
+                // optional: coba auto reconnect setelah delay
+                reconnectWithDelay(address)
             }
         }
     }
