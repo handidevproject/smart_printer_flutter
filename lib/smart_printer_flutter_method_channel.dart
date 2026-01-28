@@ -168,7 +168,7 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
   @override
   Future<void> posPrintImage(String base64Encoded, double width) async {
     await _channel.invokeMethod('pos_printImage', {
-      'base64': base64Encoded,
+      'data': base64Encoded,
       'width': width,
     });
   }
@@ -285,9 +285,9 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
   /// Sends a base64-encoded PDF to be printed using TSPL.
   @override
   Future<void> tsplPrintPDFBase64(
-      String base64Encoded,
-      LabelSize labelSize,
-      ) async {
+    String base64Encoded,
+    LabelSize labelSize,
+  ) async {
     await _channel.invokeMethod('tspl_printPDFBase64', {
       'base64': base64Encoded,
       'label': labelSize.value,

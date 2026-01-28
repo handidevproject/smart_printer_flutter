@@ -38,8 +38,6 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
 
     private lateinit var applicationContext: Context
 
-    // private var printer: TSPLPrinter? = null //TODO ALY
-
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         applicationContext = flutterPluginBinding.applicationContext
 
@@ -172,6 +170,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
 
         val attr = TextAttr.from(args)
         PosActivity.instance.printText(attr, printerManager.posPrinter!!)
+        result.success(null)
     }
 
     private fun handlePrintImage(call: MethodCall, result: Result) {
@@ -197,6 +196,8 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
             width.toInt(),
             printerManager.posPrinter!!
         )
+        
+        result.success(null)
     }
 
     private fun handlePrintQRCode(call: MethodCall, result: Result) {
@@ -208,6 +209,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
         val attr = QrcodeAttr.from(args);
 
         PosActivity.instance.printQRCode(printerManager.posPrinter!!, attr)
+        result.success(null)
     }
 
     private fun handlePrintBarcode(call: MethodCall, result: Result) {
@@ -218,6 +220,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
 
         val attr = BarcodeAttr.from(args)
         PosActivity.instance.printBarcode(printerManager.posPrinter!!, attr)
+        result.success(null)
     }
 
     private fun handlePosCut(result: Result) {

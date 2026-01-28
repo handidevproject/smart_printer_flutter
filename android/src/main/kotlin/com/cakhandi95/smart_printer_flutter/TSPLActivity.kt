@@ -120,8 +120,7 @@ class TSPLActivity {
         }
         pdfFile.delete()
     }
-
-    // TODO ALY - handle isPrinted in print pdfFromPath
+    
     var isPrinting = false
 
     @Synchronized
