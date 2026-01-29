@@ -79,6 +79,14 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
         }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
+        if (!::printerManager.isInitialized) {
+             initPrinterManager()
+             if (!::printerManager.isInitialized) {
+                 result.error("NOT_INITIALIZED", "PrinterManager not initialized", null)
+                 return
+             }
+        }
+
         when (call.method) {
 
             // Scan Bluetooth
