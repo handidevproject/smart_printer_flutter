@@ -36,6 +36,10 @@ class PrinterManager (
 
     private var curConnect: IDeviceConnection? = null
     private var _isConnected: Boolean = false
+    private var curName: String? = null
+    private var curAddress: String? = null
+    private var curType: String? = null
+    private var curProtocol: String? = null
 
     val posPrinter: POSPrinter? get() = curConnect?.let {
         POSPrinter(it)
@@ -105,18 +109,31 @@ class PrinterManager (
 
     // --- Connect Methods ---
     fun connectBluetooth(mac: String) {
+        val device = bluetoothAdapter.getRemoteDevice(mac)
+        curName = device.name ?: "Bluetooth Printer"
+        curAddress = mac
+        curType = "bluetooth"
         connect(POSConnect.DEVICE_TYPE_BLUETOOTH, mac)
     }
 
     fun connectEthernet(ipAddress: String) {
+        curName = "Ethernet Printer"
+        curAddress = ipAddress
+        curType = "ethernet"
         connect(POSConnect.DEVICE_TYPE_ETHERNET, ipAddress)
     }
 
     fun connectUSB(path: String) {
+        curName = "USB Printer"
+        curAddress = path
+        curType = "usb"
         connect(POSConnect.DEVICE_TYPE_USB, path)
     }
 
     fun connectSerial(port: String, baudrate: String) {
+        curName = "Serial Printer"
+        curAddress = "$port,$baudrate"
+        curType = "serial"
         connect(POSConnect.DEVICE_TYPE_SERIAL, "$port,$baudrate")
     }
 
@@ -128,12 +145,56 @@ class PrinterManager (
         curConnect?.connect(address, connectListener)
     }
 
+    private fun detectProtocol() {
+        val name = curName?.lowercase() ?: ""
+        if (name.contains("label") || name.contains("tspl") || name.contains("gp-") || 
+            name.contains("xp-3") || name.contains("xp-4") || name.contains("xp-d") || 
+            name.contains("bp-") ||  name.contains("bp-td") || name.contains("td110")) {
+            curProtocol = "TSPL"
+            Log.d(TAG, "Detected protocol: TSPL (heuristic)")
+            return
+        }
+
+        if (name.contains("receipt") || name.contains("pos") || name.contains("mpt") || 
+            name.contains("xp-2") || name.contains("xp-5") || name.contains("tp-") ||
+            name.contains("rpp") || name.contains("rpp02")) {
+            curProtocol = "POS"
+            Log.d(TAG, "Detected protocol: POS (heuristic)")
+            return
+        }
+
+        tsplPrinter?.printerStatus(1000) { code ->
+            if (code != -1) {
+                curProtocol = "TSPL"
+                Log.d(TAG, "Detected protocol: TSPL (status check success)")
+            } else {
+                curProtocol = "POS" 
+                Log.d(TAG, "Detected protocol: POS (status check failed, fallback)")
+            }
+        }
+    }
+
     fun disconnect() {
         _isConnected = false
         curConnect?.close()
         curConnect = null
+        curName = null
+        curAddress = null
+        curType = null
+        curProtocol = null
         onStatusChanged(mapOf("status" to PeripheralStatus.DISCONNECTED.value))
         Log.d(TAG, "disconnect - status: ${mapOf("status" to PeripheralStatus.DISCONNECTED.value)}" )
+    }
+
+    fun getConnectedDevice(): Map<String, Any?>? {
+        if (!_isConnected) return null
+        return mapOf(
+            "name" to curName,
+            "uuid" to curAddress,
+            "type" to curType,
+            "protocol" to curProtocol,
+            "state" to if (_isConnected) 2 else 0
+        )
     }
 
     private fun reconnectWithDelay(address: String, delayMs: Long = 3000) {
@@ -151,6 +212,7 @@ class PrinterManager (
         when (code) {
             POSConnect.CONNECT_SUCCESS -> {
                 _isConnected = true
+                detectProtocol()
                 onStatusChanged(
                     mapOf(
                         "status" to PeripheralStatus.CONNECTED.value,
@@ -179,7 +241,6 @@ class PrinterManager (
                         "uuid" to address
                     )
                 )
-                // optional: coba auto reconnect setelah delay
                 reconnectWithDelay(address)
             }
         }

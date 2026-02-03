@@ -11,7 +11,7 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
   static final Object _token = Object();
 
   static SmartPrinterFlutterPlatform _instance =
-  MethodChannelSmartPrinterFlutter();
+      MethodChannelSmartPrinterFlutter();
 
   /// The current platform-specific implementation of [SmartPrinterFlutterPlatform].
   static SmartPrinterFlutterPlatform get instance => _instance;
@@ -63,6 +63,11 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
 
   /// Checks if a printer is currently connected.
   Future<bool> get isConnected;
+
+  /// Gets the details of the currently connected printer.
+  Future<Peripheral?> getConnectedDevice() {
+    throw UnimplementedError('getConnectedDevice() has not been implemented.');
+  }
 
   // ===========================================================================
   // POS Printer Methods

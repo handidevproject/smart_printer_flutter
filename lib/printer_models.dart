@@ -57,8 +57,10 @@ class Peripheral {
   final String? name;
   final String? uuid;
   final int? stateStr;
+  final String? type;
+  final String? protocol;
 
-  Peripheral({this.name, this.uuid, this.stateStr});
+  Peripheral({this.name, this.uuid, this.stateStr, this.type, this.protocol});
 
   /// Creates a [Peripheral] instance from a JSON map.
   factory Peripheral.fromJson(Map<String, dynamic> json) {
@@ -66,6 +68,8 @@ class Peripheral {
       name: json['name'],
       uuid: json['uuid'],
       stateStr: json['state'],
+      type: json['type'],
+      protocol: json['protocol'],
     );
   }
 

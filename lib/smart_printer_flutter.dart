@@ -35,7 +35,8 @@ class SmartPrinterFlutter {
   /// Connects to a printer via Serial (COM) port with a given [port] and [baudrate].
   ///
   /// Example: await connectSerial("COM3", "9600");
-  Future<void> connectSerial(String port, String baudrate) => _platform.connectSerial(port, baudrate);
+  Future<void> connectSerial(String port, String baudrate) =>
+      _platform.connectSerial(port, baudrate);
 
   /// Connects to a printer via USB using the device [path].
   ///
@@ -50,6 +51,9 @@ class SmartPrinterFlutter {
 
   /// Check if the device is currently scanning.
   Future<bool> isScanning() => _platform.isScanning();
+
+  /// Gets the details of the currently connected printer.
+  Future<Peripheral?> getConnectedDevice() => _platform.getConnectedDevice();
 
   // =======================
   // POS Printer Methods

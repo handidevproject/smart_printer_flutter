@@ -126,6 +126,7 @@ class SmartPrinterFlutterPlugin: FlutterPlugin, MethodCallHandler {
 
             "isScanning" -> result.success(printerManager.isScanning)
             "isConnected" -> result.success(printerManager.isConnected)
+            "getConnectedDevice" -> result.success(printerManager.getConnectedDevice())
 
             // === Printer actions (POS / TSPL) ===
             "pos_printText" -> handlePrintText(call, result)

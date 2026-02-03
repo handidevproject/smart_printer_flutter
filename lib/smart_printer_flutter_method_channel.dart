@@ -144,6 +144,14 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
     return connected;
   }
 
+  /// Gets the details of the currently connected printer.
+  @override
+  Future<Peripheral?> getConnectedDevice() async {
+    final result = await _channel.invokeMethod('getConnectedDevice');
+    if (result == null) return null;
+    return Peripheral.fromJson(Map<String, dynamic>.from(result));
+  }
+
   /// Sends text to the POS printer with optional formatting.
   @override
   Future<void> posPrintText(
