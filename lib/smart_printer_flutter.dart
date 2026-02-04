@@ -22,8 +22,26 @@ class SmartPrinterFlutter {
   /// Stop scanning.
   Future<void> stopScan() => _platform.stopScan();
 
-  /// Connect to a device by its [deviceId].
-  Future<void> connect(String deviceId) => _platform.connect(deviceId);
+  /// Connects to a printer via Bluetooth using the printer's [mac] address.
+  ///
+  /// Example: await connectBluetooth("00:11:22:33:44:55");
+  Future<void> connectBluetooth(String mac) => _platform.connectBluetooth(mac);
+
+  /// Connects to a printer over Ethernet using the provided [ip] address.
+  ///
+  /// Example: await connectEthernet("192.168.0.100");
+  Future<void> connectEthernet(String ip) => _platform.connectEthernet(ip);
+
+  /// Connects to a printer via Serial (COM) port with a given [port] and [baudrate].
+  ///
+  /// Example: await connectSerial("COM3", "9600");
+  Future<void> connectSerial(String port, String baudrate) =>
+      _platform.connectSerial(port, baudrate);
+
+  /// Connects to a printer via USB using the device [path].
+  ///
+  /// Example: await connectUSB("/dev/usb/lp0");
+  Future<void> connectUSB(String path) => _platform.connectUSB(path);
 
   /// Disconnect the currently connected device.
   Future<void> disconnect() => _platform.disconnect();
@@ -33,6 +51,9 @@ class SmartPrinterFlutter {
 
   /// Check if the device is currently scanning.
   Future<bool> isScanning() => _platform.isScanning();
+
+  /// Gets the details of the currently connected printer.
+  Future<Peripheral?> getConnectedDevice() => _platform.getConnectedDevice();
 
   // =======================
   // POS Printer Methods

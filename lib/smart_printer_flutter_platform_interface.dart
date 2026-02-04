@@ -35,8 +35,25 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
   /// Stops the Bluetooth scanning process.
   Future<void> stopScan();
 
-  /// Connects to a printer using its unique [deviceId].
-  Future<void> connect(String deviceId);
+  /// Connects to a printer over Ethernet using the provided [ip] address.
+  ///
+  /// Example: await connectEthernet("192.168.0.100");
+  Future<void> connectEthernet(String ip);
+
+  /// Connects to a printer via Bluetooth using the printer's [mac] address.
+  ///
+  /// Example: await connectBluetooth("00:11:22:33:44:55");
+  Future<void> connectBluetooth(String mac);
+
+  /// Connects to a printer via USB using the device [path].
+  ///
+  /// Example: await connectUSB("/dev/usb/lp0");
+  Future<void> connectUSB(String path);
+
+  /// Connects to a printer via Serial (COM) port with a given [port] and [baudrate].
+  ///
+  /// Example: await connectSerial("COM3", "9600");
+  Future<void> connectSerial(String port, String baudrate);
 
   /// Disconnects from the currently connected printer.
   Future<void> disconnect();
@@ -46,6 +63,11 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
 
   /// Checks if a printer is currently connected.
   Future<bool> get isConnected;
+
+  /// Gets the details of the currently connected printer.
+  Future<Peripheral?> getConnectedDevice() {
+    throw UnimplementedError('getConnectedDevice() has not been implemented.');
+  }
 
   // ===========================================================================
   // POS Printer Methods
@@ -58,12 +80,12 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
   /// - [width]: Width multiplier for the text.
   /// - [height]: Height multiplier for the text.
   Future<void> posPrintText(
-    String text, {
-    PTextAlign align = PTextAlign.left,
-    PTextAttribute attribute = PTextAttribute.normal,
-    PTextW width = PTextW.w1,
-    PTextH height = PTextH.h1,
-  }) {
+      String text, {
+        PTextAlign align = PTextAlign.left,
+        PTextAttribute attribute = PTextAttribute.normal,
+        PTextW width = PTextW.w1,
+        PTextH height = PTextH.h1,
+      }) {
     throw UnimplementedError('posPrintText() has not been implemented.');
   }
 
@@ -80,11 +102,11 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
   /// - [errLevel]: Error correction level (L, M, Q, H).
   /// - [encoding]: Encoding of the content string.
   Future<void> posPrintQRCode(
-    String code, {
-    int unitSize = 5,
-    ErrLevel errLevel = ErrLevel.L,
-    PStringEncoding encoding = PStringEncoding.utf8,
-  }) {
+      String code, {
+        int unitSize = 5,
+        ErrLevel errLevel = ErrLevel.L,
+        PStringEncoding encoding = PStringEncoding.utf8,
+      }) {
     throw UnimplementedError('printQrCode() has not been implemented.');
   }
 
@@ -94,10 +116,10 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
   /// - [type]: Type of barcode (e.g., Code39, Code128).
   /// - [encoding]: Encoding of the content string.
   Future<void> posPrintBarcode(
-    String content, {
-    PBarcodeType type = PBarcodeType.code39,
-    PStringEncoding encoding = PStringEncoding.utf8,
-  });
+      String content, {
+        PBarcodeType type = PBarcodeType.code39,
+        PStringEncoding encoding = PStringEncoding.utf8,
+      });
 
   /// Sends a cut paper command to the POS printer.
   Future<void> cutPaper();
@@ -114,12 +136,12 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
   /// - [width]: Width multiplier.
   /// - [height]: Height multiplier.
   Future<void> tsplPrintText(
-    String text, {
-    PTextAlign align = PTextAlign.left,
-    PTextAttribute attribute = PTextAttribute.normal,
-    PTextW width = PTextW.w1,
-    PTextH height = PTextH.h1,
-  });
+      String text, {
+        PTextAlign align = PTextAlign.left,
+        PTextAttribute attribute = PTextAttribute.normal,
+        PTextW width = PTextW.w1,
+        PTextH height = PTextH.h1,
+      });
 
   /// Prints a QR code on TSPL printers.
   ///
@@ -128,13 +150,13 @@ abstract class SmartPrinterFlutterPlatform extends PlatformInterface {
   /// - [errLevel]: Error correction level.
   /// - [encoding]: Encoding of the string.
   Future<void> tsplPrintQRCode(
-    String code, {
-    int x = 0,
-    int y = 0,
-    ErrLevel errLevel = ErrLevel.L,
-    QRCodeMode mode = QRCodeMode.M,
-    int rotate = 0,
-  });
+      String code, {
+        int x = 0,
+        int y = 0,
+        ErrLevel errLevel = ErrLevel.L,
+        QRCodeMode mode = QRCodeMode.M,
+        int rotate = 0,
+      });
 
   /// Prints an image (base64-encoded) on TSPL printers.
   ///

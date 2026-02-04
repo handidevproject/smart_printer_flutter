@@ -7,10 +7,27 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockSmartPrinterFlutterPlatform
     with MockPlatformInterfaceMixin
     implements SmartPrinterFlutterPlatform {
+  @override
+  Future<void> connectBluetooth(String mac) {
+    // TODO: implement connectBluetooth
+    throw UnimplementedError();
+  }
 
   @override
-  Future<void> connect(String deviceId) {
-    // TODO: implement connect
+  Future<void> connectEthernet(String ip) {
+    // TODO: implement connectEthernet
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> connectSerial(String port, String baudrate) {
+    // TODO: implement connectSerial
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> connectUSB(String path) {
+    // TODO: implement connectUSB
     throw UnimplementedError();
   }
 
@@ -45,7 +62,9 @@ class MockSmartPrinterFlutterPlatform
   Stream<List<Peripheral>> get peripheralsStream => throw UnimplementedError();
 
   @override
-  Future<void> posPrintBarcode(String content, {PBarcodeType type = PBarcodeType.code39, PStringEncoding encoding = PStringEncoding.utf8}) {
+  Future<void> posPrintBarcode(String content,
+      {PBarcodeType type = PBarcodeType.code39,
+        PStringEncoding encoding = PStringEncoding.utf8}) {
     // TODO: implement posPrintBarcode
     throw UnimplementedError();
   }
@@ -57,13 +76,20 @@ class MockSmartPrinterFlutterPlatform
   }
 
   @override
-  Future<void> posPrintQRCode(String code, {int unitSize = 5, ErrLevel errLevel = ErrLevel.L, PStringEncoding encoding = PStringEncoding.utf8}) {
+  Future<void> posPrintQRCode(String code,
+      {int unitSize = 5,
+        ErrLevel errLevel = ErrLevel.L,
+        PStringEncoding encoding = PStringEncoding.utf8}) {
     // TODO: implement posPrintQRCode
     throw UnimplementedError();
   }
 
   @override
-  Future<void> posPrintText(String text, {PTextAlign align = PTextAlign.left, PTextAttribute attribute = PTextAttribute.normal, PTextW width = PTextW.w1, PTextH height = PTextH.h1}) {
+  Future<void> posPrintText(String text,
+      {PTextAlign align = PTextAlign.left,
+        PTextAttribute attribute = PTextAttribute.normal,
+        PTextW width = PTextW.w1,
+        PTextH height = PTextH.h1}) {
     // TODO: implement posPrintText
     throw UnimplementedError();
   }
@@ -75,47 +101,60 @@ class MockSmartPrinterFlutterPlatform
   }
 
   @override
-  // TODO: implement statusStream
   Stream<PrinterStatus> get statusStream => throw UnimplementedError();
 
   @override
   Future<void> stopScan() {
-    // TODO: implement stopScan
     throw UnimplementedError();
   }
 
   @override
   Future<void> tsplPrintImage(String base64Encoded, int width) {
-    // TODO: implement tsplPrintImage
     throw UnimplementedError();
   }
 
   @override
   Future<void> tsplPrintPDF(String filePath, LabelSize labelSize) {
-    // TODO: implement tsplPrintPDF
     throw UnimplementedError();
   }
 
   @override
   Future<void> tsplPrintPDFBase64(String base64Encoded, LabelSize labelSize) {
-    // TODO: implement tsplPrintPDFBase64
     throw UnimplementedError();
   }
 
   @override
-  Future<void> tsplPrintQRCode(String code, {int x = 0, int y = 0, ErrLevel errLevel = ErrLevel.L, QRCodeMode mode = QRCodeMode.M, int rotate = 0}) {
-    // TODO: implement tsplPrintQRCode
+  Future<void> tsplPrintQRCode(String code,
+      {int x = 0,
+        int y = 0,
+        ErrLevel errLevel = ErrLevel.L,
+        QRCodeMode mode = QRCodeMode.M,
+        int rotate = 0}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> tsplPrintText(String text, {PTextAlign align = PTextAlign.left, PTextAttribute attribute = PTextAttribute.normal, PTextW width = PTextW.w1, PTextH height = PTextH.h1}) {
+  Future<void> tsplPrintText(String text,
+      {PTextAlign align = PTextAlign.left,
+        PTextAttribute attribute = PTextAttribute.normal,
+        PTextW width = PTextW.w1,
+        PTextH height = PTextH.h1}) {
     // TODO: implement tsplPrintText
     throw UnimplementedError();
   }
+
   @override
   Future<void> initializeBle() {
-    // TODO: implement initializeBle
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getPrinterStatus() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Peripheral?> getConnectedDevice() {
     throw UnimplementedError();
   }
 }
