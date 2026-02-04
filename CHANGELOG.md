@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.1 - 2026-02-04
+### ✨ Features
+- **Printer**
+    - Implementation POS SYSTEM
+
 ## 0.2.0 - 2025-10-03
 ### ✨ Features
 - **Printer Connections**
