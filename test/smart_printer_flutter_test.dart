@@ -64,7 +64,7 @@ class MockSmartPrinterFlutterPlatform
   @override
   Future<void> posPrintBarcode(String content,
       {PBarcodeType type = PBarcodeType.code39,
-      PStringEncoding encoding = PStringEncoding.utf8}) {
+        PStringEncoding encoding = PStringEncoding.utf8}) {
     // TODO: implement posPrintBarcode
     throw UnimplementedError();
   }
@@ -78,8 +78,8 @@ class MockSmartPrinterFlutterPlatform
   @override
   Future<void> posPrintQRCode(String code,
       {int unitSize = 5,
-      ErrLevel errLevel = ErrLevel.L,
-      PStringEncoding encoding = PStringEncoding.utf8}) {
+        ErrLevel errLevel = ErrLevel.L,
+        PStringEncoding encoding = PStringEncoding.utf8}) {
     // TODO: implement posPrintQRCode
     throw UnimplementedError();
   }
@@ -87,9 +87,9 @@ class MockSmartPrinterFlutterPlatform
   @override
   Future<void> posPrintText(String text,
       {PTextAlign align = PTextAlign.left,
-      PTextAttribute attribute = PTextAttribute.normal,
-      PTextW width = PTextW.w1,
-      PTextH height = PTextH.h1}) {
+        PTextAttribute attribute = PTextAttribute.normal,
+        PTextW width = PTextW.w1,
+        PTextH height = PTextH.h1}) {
     // TODO: implement posPrintText
     throw UnimplementedError();
   }
@@ -126,19 +126,19 @@ class MockSmartPrinterFlutterPlatform
   @override
   Future<void> tsplPrintQRCode(String code,
       {int x = 0,
-      int y = 0,
-      ErrLevel errLevel = ErrLevel.L,
-      QRCodeMode mode = QRCodeMode.M,
-      int rotate = 0}) {
+        int y = 0,
+        ErrLevel errLevel = ErrLevel.L,
+        QRCodeMode mode = QRCodeMode.M,
+        int rotate = 0}) {
     throw UnimplementedError();
   }
 
   @override
   Future<void> tsplPrintText(String text,
       {PTextAlign align = PTextAlign.left,
-      PTextAttribute attribute = PTextAttribute.normal,
-      PTextW width = PTextW.w1,
-      PTextH height = PTextH.h1}) {
+        PTextAttribute attribute = PTextAttribute.normal,
+        PTextW width = PTextW.w1,
+        PTextH height = PTextH.h1}) {
     // TODO: implement tsplPrintText
     throw UnimplementedError();
   }

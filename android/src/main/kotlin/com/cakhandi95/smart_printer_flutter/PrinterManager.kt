@@ -147,15 +147,15 @@ class PrinterManager (
 
     private fun detectProtocol() {
         val name = curName?.lowercase() ?: ""
-        if (name.contains("label") || name.contains("tspl") || name.contains("gp-") || 
-            name.contains("xp-3") || name.contains("xp-4") || name.contains("xp-d") || 
+        if (name.contains("label") || name.contains("tspl") || name.contains("gp-") ||
+            name.contains("xp-3") || name.contains("xp-4") || name.contains("xp-d") ||
             name.contains("bp-") ||  name.contains("bp-td") || name.contains("td110")) {
             curProtocol = "TSPL"
             Log.d(TAG, "Detected protocol: TSPL (heuristic)")
             return
         }
 
-        if (name.contains("receipt") || name.contains("pos") || name.contains("mpt") || 
+        if (name.contains("receipt") || name.contains("pos") || name.contains("mpt") ||
             name.contains("xp-2") || name.contains("xp-5") || name.contains("tp-") ||
             name.contains("rpp") || name.contains("rpp02")) {
             curProtocol = "POS"
@@ -168,7 +168,7 @@ class PrinterManager (
                 curProtocol = "TSPL"
                 Log.d(TAG, "Detected protocol: TSPL (status check success)")
             } else {
-                curProtocol = "POS" 
+                curProtocol = "POS"
                 Log.d(TAG, "Detected protocol: POS (status check failed, fallback)")
             }
         }

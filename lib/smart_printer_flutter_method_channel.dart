@@ -155,12 +155,12 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
   /// Sends text to the POS printer with optional formatting.
   @override
   Future<void> posPrintText(
-    String text, {
-    PTextAlign align = PTextAlign.left,
-    PTextAttribute attribute = PTextAttribute.normal,
-    PTextW width = PTextW.w1,
-    PTextH height = PTextH.h1,
-  }) async {
+      String text, {
+        PTextAlign align = PTextAlign.left,
+        PTextAttribute attribute = PTextAttribute.normal,
+        PTextW width = PTextW.w1,
+        PTextH height = PTextH.h1,
+      }) async {
     await _channel.invokeMethod('pos_printText', {
       'text': text,
       'align': align.index,
@@ -186,11 +186,11 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
   /// Accepts optional configuration: [unitSize], [errLevel], and [encoding].
   @override
   Future<void> posPrintQRCode(
-    String code, {
-    int unitSize = 5,
-    ErrLevel errLevel = ErrLevel.L,
-    PStringEncoding encoding = PStringEncoding.utf8,
-  }) async {
+      String code, {
+        int unitSize = 5,
+        ErrLevel errLevel = ErrLevel.L,
+        PStringEncoding encoding = PStringEncoding.utf8,
+      }) async {
     await _channel.invokeMethod('pos_printQRCode', {
       'code': code,
       'unitSize': unitSize,
@@ -202,10 +202,10 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
   /// Sends a barcode to the POS printer.
   @override
   Future<void> posPrintBarcode(
-    String content, {
-    PBarcodeType type = PBarcodeType.code39,
-    PStringEncoding encoding = PStringEncoding.utf8,
-  }) async {
+      String content, {
+        PBarcodeType type = PBarcodeType.code39,
+        PStringEncoding encoding = PStringEncoding.utf8,
+      }) async {
     await _channel.invokeMethod('pos_printBarcode', {
       'content': content,
       'type': type.index,
@@ -222,12 +222,12 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
   /// Sends formatted text to the TSPL printer.
   @override
   Future<void> tsplPrintText(
-    String text, {
-    PTextAlign align = PTextAlign.left,
-    PTextAttribute attribute = PTextAttribute.normal,
-    PTextW width = PTextW.w1,
-    PTextH height = PTextH.h1,
-  }) async {
+      String text, {
+        PTextAlign align = PTextAlign.left,
+        PTextAttribute attribute = PTextAttribute.normal,
+        PTextW width = PTextW.w1,
+        PTextH height = PTextH.h1,
+      }) async {
     await _channel.invokeMethod('tspl_printText', {
       'text': text,
       'align': align.index,
@@ -240,13 +240,13 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
   /// Sends a QR code to the TSPL printer with positioning and rotation.
   @override
   Future<void> tsplPrintQRCode(
-    String code, {
-    int x = 0,
-    int y = 0,
-    ErrLevel errLevel = ErrLevel.L,
-    QRCodeMode mode = QRCodeMode.M,
-    int rotate = 0,
-  }) async {
+      String code, {
+        int x = 0,
+        int y = 0,
+        ErrLevel errLevel = ErrLevel.L,
+        QRCodeMode mode = QRCodeMode.M,
+        int rotate = 0,
+      }) async {
     await _channel.invokeMethod('tspl_printQRCode', {
       'code': code,
       'x': x,
@@ -293,9 +293,9 @@ class MethodChannelSmartPrinterFlutter extends SmartPrinterFlutterPlatform {
   /// Sends a base64-encoded PDF to be printed using TSPL.
   @override
   Future<void> tsplPrintPDFBase64(
-    String base64Encoded,
-    LabelSize labelSize,
-  ) async {
+      String base64Encoded,
+      LabelSize labelSize,
+      ) async {
     await _channel.invokeMethod('tspl_printPDFBase64', {
       'base64': base64Encoded,
       'label': labelSize.value,
